@@ -19,7 +19,7 @@ public class MyGdxGame extends Game {
 		batch = new SpriteBatch();
 		font = new BitmapFont();
 		gamCam = new OrthographicCamera();
-		gamCam.setToOrtho(true);
+		gamCam.setToOrtho(false, 1280, 720);
 		debugRenderer = new Box2DDebugRenderer();
 		world = new World(new Vector2(0, -9.8f), true);
 		this.setScreen(new MainScreen(this));
@@ -32,6 +32,7 @@ public class MyGdxGame extends Game {
 
 	@Override
 	public void dispose () {
+		this.getScreen().dispose();
 		batch.dispose();
 		font.dispose();
 		world.dispose();
