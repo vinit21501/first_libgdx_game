@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class Button {
     private TextButton.TextButtonStyle buttonStyle;
@@ -22,6 +23,7 @@ public class Button {
     private TextButton exitButton;
     private TextButton loadButton;
     private TextButton resumeButton;
+    private TextButton mainMenuButton;
     private float buttonHeight, buttonWidth;
     private Table table;
     Button(MyGdxGame mygame) {
@@ -29,8 +31,7 @@ public class Button {
         up = new TextureRegion(new Texture("BUTTON/up.png"));
         down = new TextureRegion(new Texture("BUTTON/down.png"));
         table = new Table();
-        table.setPosition(Utils.width / 2, Utils.height / 2, Align.center);
-        stage = new Stage();
+        stage = new Stage(new ScreenViewport());
         stage.addActor(table);
         buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = mygame.font;
@@ -43,7 +44,7 @@ public class Button {
     }
     public void addNewGameButton() {
         newGame = new TextButton("NEW GAME", buttonStyle);
-        table.add(newGame).size(buttonWidth, buttonHeight).row();
+        table.add(newGame).size(buttonWidth, buttonHeight).space(Utils.buttonPadding).row();
         newGame.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -51,14 +52,23 @@ public class Button {
             }
         });
     }
+    public void addMainMenuButton() {
+        mainMenuButton = new TextButton("MAIN MENU", buttonStyle);
+        table.add(mainMenuButton).size(buttonWidth, buttonHeight).space(Utils.buttonPadding).row();
+        mainMenuButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                mygame.setScreen(new MainScreen(mygame));
+            }
+        });
+    }
     public void addLoadButton() {
         loadButton = new TextButton("LOAD GAME", buttonStyle);
-        table.add(loadButton).size(buttonWidth, buttonHeight).row();
-
+        table.add(loadButton).size(buttonWidth, buttonHeight).space(Utils.buttonPadding).row();
     }
     public void addExitButton() {
         exitButton = new TextButton("QUIT", buttonStyle);
-        table.add(exitButton).size(buttonWidth, buttonHeight).row();
+        table.add(exitButton).size(buttonWidth, buttonHeight).space(Utils.buttonPadding).row();
         exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -68,9 +78,11 @@ public class Button {
     }
     public void addResumeButton() {
         resumeButton = new TextButton("RESUME GAME", buttonStyle);
-        table.add(resumeButton).size(buttonWidth, buttonHeight).row();
+        table.add(resumeButton).size(buttonWidth, buttonHeight).space(Utils.buttonPadding).row();
     }
     public void render(float delta) {
+        table.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f, Align.center);
+        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         stage.act(delta);
         stage.draw();
     }

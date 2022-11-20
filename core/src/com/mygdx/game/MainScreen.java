@@ -14,11 +14,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 
 public class MainScreen implements Screen {
-    MyGdxGame mygame;
+    MyGdxGame myGame;
     TextureRegion backGround;
     Button button;
     MainScreen(MyGdxGame game) {
-        mygame = game;
+        myGame = game;
         backGround = new TextureRegion(new Texture("BACKGROUND/mainMenu.png"));
         button = new Button(game);
         button.addNewGameButton();
@@ -37,14 +37,16 @@ public class MainScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        mygame.batch.begin();
-        mygame.batch.draw(backGround, 0, 0, Utils.width, Utils.height);
-        mygame.batch.end();
+        myGame.batch.setProjectionMatrix(myGame.gamCam.combined);
+        myGame.batch.begin();
+        myGame.batch.draw(backGround, -Utils.width / 2f , -Utils.height / 2f, Utils.width, Utils.height);
+        myGame.batch.end();
         button.render(delta);
     }
 
     @Override
     public void resize(int width, int height) {
+        myGame.scalePort.update(width, height);
     }
 
     @Override
