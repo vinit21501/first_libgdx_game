@@ -13,7 +13,8 @@ public class PauseMenu implements Screen {
     PauseMenu(MyGdxGame game) {
         myGame = game;
         backGround = new TextureRegion(new Texture("badlogic.jpg"));
-        button = new Button(game);
+        button = game.button;
+        button.addMainMenuButton();
         button.addResumeButton();
         button.addLoadButton();
         button.addExitButton();

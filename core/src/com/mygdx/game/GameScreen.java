@@ -81,7 +81,6 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
-        myGame.batch.dispose();
-        myGame.world.dispose();
+        myGame.dispose();
     }
 }

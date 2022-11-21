@@ -3,8 +3,8 @@ package com.mygdx.game;
 import com.badlogic.gdx.Gdx;
 
 public class Utils {
-    static float buttonHeight = 50;
-    static  float buttonWidth = 150;
+    static float buttonHeight = 10;
+    static  float buttonWidth = 30;
     static float buttonPadding = 5;
     static float TIME_STEP = 1 / 60f;
     static float PPM = 32;

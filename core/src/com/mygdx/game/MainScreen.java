@@ -5,13 +5,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Align;
 
 public class MainScreen implements Screen {
     MyGdxGame myGame;
@@ -20,13 +13,12 @@ public class MainScreen implements Screen {
     MainScreen(MyGdxGame game) {
         myGame = game;
         backGround = new TextureRegion(new Texture("BACKGROUND/mainMenu.png"));
-        button = new Button(game);
+        button = game.button;
         button.addNewGameButton();
         button.addResumeButton();
         button.addLoadButton();
         button.addExitButton();
     }
-
 
     @Override
     public void show() {
@@ -66,6 +58,6 @@ public class MainScreen implements Screen {
 
     @Override
     public void dispose() {
-        button.dispose();
+        myGame.dispose();
     }
 }
