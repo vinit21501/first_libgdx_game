@@ -34,7 +34,7 @@ public class Missile {
     public void render(World world) {
         misdef = new BodyDef();
         misdef.type = BodyDef.BodyType.DynamicBody;
-//        misdef.position.set(400, 400);
+        misdef.position.set(x, y);
 
 //        misdef.bullet = true;
 //        misdef.position.setAngleDeg(60);
@@ -43,13 +43,13 @@ public class Missile {
         shap = new PolygonShape();
 //        float t = (float)Math.tanh(missle.getLinearVelocity().y / missle.getLinearVelocity().x);
         shap.setAsBox(missleWidth, missleHeight);
-        missle.createFixture(shap, 1f);
+        missle.createFixture(shap, 0.2f);
         shap.dispose();
-        missle.applyForce(new Vector2(1000, 50), new Vector2(missle.getPosition().x, missle.getPosition().y), true);
+//        missle.applyForce(new Vector2(1000, 0), new Vector2(missle.getPosition().x, missle.getPosition().y), true);
 //        missle.applyForceToCenter(new Vector2(1000, 1), true);
 //        missle.applyForceToCenter(2000, 0, true);
         missle.setLinearVelocity(speed, 0);
-        missle.setGravityScale(5);
+        missle.setGravityScale(4);
     }
     public void update(SpriteBatch batch) {
 
@@ -57,10 +57,7 @@ public class Missile {
 //        for (JointEdge collide : missle.getJointList()) {
 //            collide.joint.getBodyA().destroyFixture(misdef);
 //        }
-        missle.setTransform(missle.getPosition().x, missle.getPosition().y, missle.getAngle());
-        batch.draw(misssleTexture, missle.getPosition().x - missleWidth / 2,
-                missle.getPosition().y - missleHeight / 2, missleWidth / 2, missleHeight / 2,
-                missleWidth, missleHeight, scale, scale, (float) Math.toDegrees(missle.getAngle()));
-        if (this.x > Gdx.graphics.getHeight()) remove = true;
+//        missle.setTransform(missle.getPosition().x, missle.getPosition().y, missle.getAngle());
+        batch.draw(misssleTexture, ((missle.getPosition().x + Utils.width / 2) / 2f) - missleWidth/ 2f, ((missle.getPosition().y + Utils.height / 2) / 1.5f) - missleHeight / 2f, missleWidth/ 2f, missleHeight / 2f, missleWidth, missleHeight, 2f, 2f, (float) Math.toDegrees(missle.getAngle()));
     }
 }

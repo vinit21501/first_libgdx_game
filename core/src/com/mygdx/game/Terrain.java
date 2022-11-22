@@ -10,10 +10,7 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.EarClippingTriangulator;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.ChainShape;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 
 public class Terrain {
     float[] heights;
@@ -63,7 +60,12 @@ public class Terrain {
         body = world.createBody(bodyDef);
         ChainShape shape = new ChainShape();
         shape.createChain(heights);
-        body.createFixture(shape, 1.0f);
+        FixtureDef terfixdef = new FixtureDef();
+        terfixdef.shape = shape;
+        terfixdef.restitution = 0;
+        terfixdef.friction = 50;
+        terfixdef.density = 0;
+        body.createFixture(terfixdef);
         shape.dispose();
     }
     public void update() {

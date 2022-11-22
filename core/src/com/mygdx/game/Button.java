@@ -45,7 +45,7 @@ public class Button {
     }
     public void addNewGameButton() {
         newGame = new TextButton("NEW GAME", buttonStyle);
-        table.add(newGame).space(Utils.buttonPadding).row();
+        table.add(newGame).size(200, 70).space(Utils.buttonPadding).row();
         newGame.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -55,7 +55,7 @@ public class Button {
     }
     public void addMainMenuButton() {
         mainMenuButton = new TextButton("MAIN MENU", buttonStyle);
-        table.add(mainMenuButton).space(Utils.buttonPadding).row();
+        table.add(mainMenuButton).size(200, 70).space(Utils.buttonPadding).row();
         mainMenuButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -65,12 +65,11 @@ public class Button {
     }
     public void addLoadButton() {
         loadButton = new TextButton("LOAD GAME", buttonStyle);
-        loadButton.sizeBy(10);
-        table.add(loadButton).space(Utils.buttonPadding).row();
+        table.add(loadButton).size(200, 70).space(Utils.buttonPadding).row();
     }
     public void addExitButton() {
         exitButton = new TextButton("QUIT", buttonStyle);
-        table.add(exitButton).space(Utils.buttonPadding).row();
+        table.add(exitButton).size(200, 70).space(Utils.buttonPadding).row();
         exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -80,7 +79,7 @@ public class Button {
     }
     public void addResumeButton() {
         resumeButton = new TextButton("RESUME GAME", buttonStyle);
-        table.add(resumeButton).space(Utils.buttonPadding).row();
+        table.add(resumeButton).size(200, 70).space(Utils.buttonPadding).row();
         resumeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -89,14 +88,9 @@ public class Button {
         });
     }
     public void render(float delta) {
-        table.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() / 2f, Align.center);
         table.debug();
-        table.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        for (Cell t : table.getCells()) {
-            t.size(Gdx.graphics.getWidth() / 100f *  buttonWidth, Gdx.graphics.getHeight() / 100f * buttonHeight);
-        }
-        mygame.font.getData().setScale(Gdx.graphics.getWidth() / 100f *  0.2f, Gdx.graphics.getHeight() / 100f * 0.2f);
-        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+//        table.align(Align.left);
+        table.setFillParent(true);
         stage.act(delta);
         stage.draw();
     }

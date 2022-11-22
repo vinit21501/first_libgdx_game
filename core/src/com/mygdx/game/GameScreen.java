@@ -4,6 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+
+import java.awt.*;
 
 public class GameScreen implements Screen {
     final MyGdxGame myGame;
@@ -16,16 +20,21 @@ public class GameScreen implements Screen {
     public GameScreen(MyGdxGame myGame) {
         this.myGame = myGame;
         platform = new Terrain();
-        player1 = new Tank(200, 0, 2, true);
+        player1 = new Tank(300, 0, 4, true);
         player2 = new Tank(-200, 0, false);
         accumulator = 1;
         backGround = new TextureRegion(new Texture("BACKGROUND/bg6.png"));
-        missile = new Missile(0, 0, 1000, 60);
+        missile = new Missile(-300, 300, 100, 60);
     }
 
     @Override
     public void show() {
         platform.renderBody(myGame.world);
+//        PolygonShape shape = new PolygonShape();
+//        shape.setAsBox(1280, 720);
+//        Body body = myGame.world.createBody(platform.bodyDef);
+//        body.createFixture(shape, 1f);
+//        shape.dispose();
         missile.render(myGame.world);
         player1.render(myGame.world);
         player2.render(myGame.world);
@@ -41,9 +50,9 @@ public class GameScreen implements Screen {
         missile.update(myGame.batch);
         player1.update(myGame.batch);
         platform.update();
-        player1.move();
+//        player1.move();
         player2.update(myGame.batch);
-//        player2.move();
+        player2.move();
         myGame.batch.end();
         myGame.polyBatch.begin();
         platform.renderTexture(myGame.polyBatch);
