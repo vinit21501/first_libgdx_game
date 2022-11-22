@@ -19,14 +19,13 @@ public class GameScreen implements Screen {
         player1 = new Tank(200, 0, 2, true);
         player2 = new Tank(-200, 0, false);
         accumulator = 1;
-        backGround = new TextureRegion(new Texture("BACKGROUND/bg3.png"));
+        backGround = new TextureRegion(new Texture("BACKGROUND/bg6.png"));
         missile = new Missile(0, 0, 1000, 60);
     }
 
     @Override
     public void show() {
-        platform.update();
-        platform.render(myGame.world);
+        platform.renderBody(myGame.world);
         missile.render(myGame.world);
         player1.render(myGame.world);
         player2.render(myGame.world);
@@ -37,15 +36,18 @@ public class GameScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         myGame.gamCam.update();
-//        myGame.batch.setProjectionMatrix(myGame.gamCam.combined);
         myGame.batch.begin();
-        myGame.batch.draw(backGround, -Utils.width / 2, -Utils.height / 2);
+        myGame.batch.draw(backGround, 0, 0);
         missile.update(myGame.batch);
         player1.update(myGame.batch);
+        platform.update();
         player1.move();
         player2.update(myGame.batch);
 //        player2.move();
         myGame.batch.end();
+        myGame.polyBatch.begin();
+        platform.renderTexture(myGame.polyBatch);
+        myGame.polyBatch.end();
         myGame.debugRenderer.render(myGame.world, myGame.gamCam.combined);
         update(delta);
     }

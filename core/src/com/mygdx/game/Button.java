@@ -40,7 +40,7 @@ public class Button {
         buttonStyle.down = new TextureRegionDrawable(down);
         buttonHeight = Utils.buttonHeight;
         buttonWidth = Utils.buttonWidth;
-        table.padTop(100);
+//        table.padTop(100);
         Gdx.input.setInputProcessor(stage);
     }
     public void addNewGameButton() {

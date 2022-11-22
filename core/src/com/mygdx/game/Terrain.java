@@ -22,30 +22,44 @@ public class Terrain {
     BodyDef bodyDef;
     TextureRegion textRegion;
     Texture texture;
-    PolygonSpriteBatch polygonSpriteBatch;
+    float[] actualHeight;
     PolygonRegion polygonRegion;
+    PolygonSprite poly;
     private void createSlice(float x, int index, int scale) {
         heights[index] = x * scale;
         heights[index + 1] = -100 + ((float) (-0.143 * Math.sin(1.75 * (x + 1.73)) - 0.180 * Math.sin(2.96 * (x+4.98)) - 0.012 * Math.sin(6.23 * (x+3.17)) + 0.088 * Math.sin(8.07 * (x+4.63))) * scale);
     }
     Terrain() {
-        heights = new float[640];
-        SLICE_WIDTH = 0.02f;
+        SLICE_WIDTH = 0.05f;
+        heights = new float[256];
         int index = 0;
-        for (float x = -3.2f; x < SLICE_WIDTH * 160 - 0.01; x += SLICE_WIDTH){
-            createSlice(x, index, 200);
+        for (float x = -3.2f; x < 3.2 - 0.01; x += SLICE_WIDTH){
+            createSlice(x, index, 215);
             index += 2;
         }
+        heights[250] = Utils.width / 2;
+        heights[251] = -Utils.height / 2;
+        heights[252] = -Utils.width / 2;
+        heights[253] = -Utils.height / 2;
+        heights[254] = heights[0];
+        heights[255] = heights[1];
         bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
-        bodyDef.position.set(1, 1);
-        texture = new Texture("BACKGROUND/bg1.png");
+        texture = new Texture("BACKGROUND/terrain.png");
+        texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
         textRegion = new TextureRegion(texture);
-        short triangles[] = new EarClippingTriangulator().computeTriangles(heights).toArray();
-        polygonRegion = new PolygonRegion(textRegion, heights, triangles);
-        polygonSpriteBatch = new PolygonSpriteBatch();
+        actualHeight = new float[256];
+        for (int i = 0; i < 256; ++i) {
+            if (i % 2 == 0) actualHeight[i] = (heights[i] + Utils.width / 2) / 2f;
+            else actualHeight[i] = (heights[i] + Utils.height / 2) / 1.5f;
+        }
+        polygonRegion = new PolygonRegion(textRegion, actualHeight, new EarClippingTriangulator().computeTriangles(actualHeight).toArray());
+        poly = new PolygonSprite(polygonRegion);
     }
-    public void render(World world) {
+    public void renderTexture(PolygonSpriteBatch batch) {
+        poly.draw(batch);
+    }
+    public void renderBody(World world) {
         body = world.createBody(bodyDef);
         ChainShape shape = new ChainShape();
         shape.createChain(heights);
@@ -53,9 +67,7 @@ public class Terrain {
         shape.dispose();
     }
     public void update() {
-        polygonSpriteBatch.begin();
-        polygonSpriteBatch.draw(polygonRegion, 1, 1);
-        texture.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
-        polygonSpriteBatch.end();
+    }
+    public void dispose() {
     }
 }
