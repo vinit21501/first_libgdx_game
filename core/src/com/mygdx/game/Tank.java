@@ -8,6 +8,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
+import com.badlogic.gdx.physics.box2d.joints.WheelJoint;
 import com.badlogic.gdx.physics.box2d.joints.WheelJointDef;
 
 public class Tank {
@@ -23,8 +25,8 @@ public class Tank {
     private FixtureDef wheelfixdef;
     private CircleShape wheels;
     private Body[] wheel;
-    private Joint[] jointarr;
-    private WheelJointDef[] joints;
+    private WheelJoint[] jointarr;
+    private WheelJointDef joints;
     private int numWheel;
     private PolygonShape shape;
     Tank(float x, float y, int type, boolean flip) {
@@ -33,7 +35,7 @@ public class Tank {
 //        bodyDef.fixedRotation = true;
         numWheel = 4;
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.angularDamping = 3;
+        bodyDef.angularDamping = 0.1f;
         if (type >= 1 && type <= 5) texture = new Texture("TANKS/tank" + type + ".png");
         else texture = new Texture("TANKS/tank2.png");
         textRegion = new TextureRegion(texture);
@@ -44,28 +46,29 @@ public class Tank {
         shape.set(points);
         wheels = new CircleShape();
         wheels.setRadius(10);
-        joints = new WheelJointDef[numWheel];
+        joints = new WheelJointDef();
         wheelfixdef = new FixtureDef();
         wheelfixdef.shape = wheels;
-        wheelfixdef.restitution = 0.4f;
+        wheelfixdef.restitution = 1f;
         wheelfixdef.density = 5f;
-        wheelfixdef.friction = 1f;
+        wheelfixdef.friction = 50f;
         wheel = new Body[numWheel];
         length = 81;
         breadth = 44;
         density = 1f;
-        jointarr = new Joint[numWheel];
+        jointarr = new WheelJoint[numWheel];
     }
     Tank(float x, float y, boolean flip) {
         this(x, y, 3, flip);
     }
     public void render(World world) {
         body = world.createBody(bodyDef);
+        body.setGravityScale(50);
         tankfixdef = new FixtureDef();
         tankfixdef.shape = shape;
-        tankfixdef.density = 5;
-        tankfixdef.restitution = 0.4f;
-        tankfixdef.friction = 0.3f;
+        tankfixdef.density = 5f;
+        tankfixdef.restitution = 1f;
+        tankfixdef.friction = 50f;
         body.createFixture(shape, density);
         body.setGravityScale(10f);
 //        PolygonShape shape = new PolygonShape();
@@ -74,35 +77,34 @@ public class Tank {
             wheel[i] = world.createBody(bodyDef);
             wheel[i].createFixture(wheels, 1f);
         }
+        joints.bodyA = body;
+        joints.frequencyHz = 5f;
+        joints.localAxisA.set(Vector2.Y);
+        joints.dampingRatio = 10f;
+        joints.maxMotorTorque = 1000000;
+        joints.localAnchorA.set(0, 0);
+        joints.enableMotor = true;
         for (int i = 0; i < numWheel; ++i) {
-            joints[i] = new WheelJointDef();
-            joints[i].bodyA = body;
-            joints[i].bodyB = wheel[i];
-            joints[i].localAnchorA.set(i * 20 + 20, 0);
-            joints[i].frequencyHz = 5f;
-//            joints[i].dampingRatio = 1;
-            joints[i].localAxisA.set(Vector2.Y);
-            joints[i].dampingRatio = 1f;
-            joints[i].maxMotorTorque = Integer.MAX_VALUE;
-            joints[i].enableMotor = true;
-//            joints[i].motorSpeed = -10f;
-            jointarr[i] = world.createJoint(joints[i]);
+            joints.bodyB = wheel[i];
+            joints.localAnchorA.x += 20;
+            jointarr[i] = (WheelJoint) world.createJoint(joints);
         }
     }
     public void move() {
         body.setGravityScale(5);
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            for (WheelJointDef t : joints){
-//                body.setLinearVelocity(-100, 0);
-                t.enableMotor = true;
-                t.motorSpeed = -1000000;
+            for (WheelJoint t : jointarr){
+                t.setMotorSpeed(5);
             }
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            for (WheelJointDef t : joints){
-//                body.setLinearVelocity(100, 0);
-                t.enableMotor = true;
-                t.motorSpeed = 10000000;
+        else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            for (WheelJoint t : jointarr){
+                t.setMotorSpeed(-5);
+            }
+        }
+        else {
+            for (WheelJoint t : jointarr){
+                t.setMotorSpeed(0);
             }
         }
     }

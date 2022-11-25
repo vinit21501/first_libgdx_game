@@ -22,9 +22,11 @@ public class MyGdxGame extends Game {
 	public OrthographicCamera gamCam;
 	public Box2DDebugRenderer debugRenderer;
 	public Viewport scalePort;
-	public float accumulator;
 	public Button button;
 	public InputMultiplexer multiplexer;
+	public MainScreen mainScreen;
+	public GameScreen gameScreen;
+	public PauseMenu pauseMenu;
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
@@ -37,22 +39,13 @@ public class MyGdxGame extends Game {
 		scalePort = new StretchViewport(Utils.width, Utils.height, gamCam);
 		debugRenderer = new Box2DDebugRenderer();
 		world = new World(new Vector2(0, -9.8f), true);
-		this.setScreen(new MainScreen(this));
-		accumulator = 2;
+//		mainScreen = new MainScreen(this);
+//		this.setScreen(mainScreen);
+		setScreen(new GameScreen(this));
 	}
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.setProjectionMatrix(gamCam.combined);
-		gamCam.update();
-		float frameTime = Math.min(Gdx.graphics.getDeltaTime(), 0.25f);
-		accumulator += frameTime;
-		while (accumulator >= Utils.TIME_STEP) {
-			accumulator -= Utils.TIME_STEP;
-			world.step(Utils.TIME_STEP, Utils.VELOCITY_ITERATIONS, Utils.POSITION_ITERATIONS);
-		}
 		super.render();
 	}
 
@@ -65,9 +58,7 @@ public class MyGdxGame extends Game {
 
 	@Override
 	public void dispose () {
-		batch.dispose();
-		world.dispose();
-		polyBatch.dispose();
 		button.dispose();
+		super.dispose();
 	}
 }

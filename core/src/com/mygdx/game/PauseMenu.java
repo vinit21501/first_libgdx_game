@@ -12,8 +12,12 @@ public class PauseMenu implements Screen {
     TextureRegion backGround;
     PauseMenu(MyGdxGame game) {
         myGame = game;
-        backGround = new TextureRegion(new Texture("badlogic.jpg"));
-        button = game.button;
+        backGround = new TextureRegion(new Texture("BACKGROUND/bg1.png"));
+        button = myGame.button;
+    }
+
+    @Override
+    public void show() {
         button.addMainMenuButton();
         button.addResumeButton();
         button.addLoadButton();
@@ -21,14 +25,13 @@ public class PauseMenu implements Screen {
     }
 
     @Override
-    public void show() {
-
-    }
-
-    @Override
     public void render(float delta) {
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        myGame.batch.setProjectionMatrix(myGame.gamCam.combined);
+        myGame.gamCam.update();
         myGame.batch.begin();
-        myGame.batch.draw(backGround, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        myGame.batch.draw(backGround, -Utils.width / 2f, -Utils.height / 2f, Utils.width, Utils.height);
         myGame.batch.end();
         button.render(delta);
     }
@@ -50,11 +53,11 @@ public class PauseMenu implements Screen {
 
     @Override
     public void hide() {
-        dispose();
     }
 
     @Override
     public void dispose() {
         myGame.batch.dispose();
+        button.dispose();
     }
 }

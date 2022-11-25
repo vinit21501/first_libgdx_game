@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 public class Button {
     private final TextButton.TextButtonStyle buttonStyle;
@@ -34,6 +35,7 @@ public class Button {
         setter = false;
         resize = false;
         stage = new Stage(new ScreenViewport());
+//        stage = new Stage(new StretchViewport(1280, 720));
         stage.addActor(table);
         buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = mygame.font;
@@ -61,7 +63,8 @@ public class Button {
                 stage.addActor(table);
                 setter = false;
                 resize = true;
-                mygame.setScreen(new PauseMenu(mygame));
+                if (mygame.pauseMenu == null) mygame.pauseMenu = new PauseMenu(mygame);
+                mygame.setScreen(mygame.pauseMenu);
             }
         });
     }
@@ -73,7 +76,8 @@ public class Button {
             public void clicked(InputEvent event, float x, float y) {
                 table.reset();
                 resize = true;
-                mygame.setScreen(new GameScreen(mygame));
+                if (mygame.gameScreen == null) mygame.gameScreen = new GameScreen(mygame);
+                mygame.setScreen(mygame.gameScreen);
             }
         });
     }
@@ -85,7 +89,8 @@ public class Button {
             public void clicked(InputEvent event, float x, float y) {
                 table.reset();
                 resize = true;
-                mygame.setScreen(new MainScreen(mygame));
+                if (mygame.mainScreen == null) mygame.mainScreen = new MainScreen(mygame);
+                mygame.setScreen(mygame.mainScreen);
             }
         });
     }
@@ -111,7 +116,8 @@ public class Button {
             public void clicked(InputEvent event, float x, float y) {
                 table.reset();
                 resize = true;
-                mygame.setScreen(new GameScreen(mygame));
+                if (mygame.gameScreen == null) mygame.gameScreen = new GameScreen(mygame);
+                mygame.setScreen(mygame.gameScreen);
             }
         });
     }
@@ -129,7 +135,6 @@ public class Button {
         }
     }
     public void render(float delta) {
-        table.debug();
         if (resize) {
             stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
             table.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
