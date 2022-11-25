@@ -76,7 +76,7 @@ public class Button {
                 table.reset();
                 resize = true;
 //                mygame.gameScreen.dispose();
-                mygame.gameScreen = new GameScreen(mygame);
+                if (mygame.gameScreen == null) mygame.gameScreen = new GameScreen(mygame);
                 mygame.setScreen(mygame.gameScreen);
             }
         });

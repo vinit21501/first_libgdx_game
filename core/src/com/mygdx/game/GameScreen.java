@@ -30,6 +30,7 @@ public class GameScreen implements Screen {
         missile = new Missile(-300, 300, 100, 60);
         button = myGame.button;
         accumulator = 3;
+
         platform.renderBody(myGame.world);
         missile.render(myGame.world);
         player1.render(myGame.world);
@@ -79,10 +80,12 @@ public class GameScreen implements Screen {
 
     @Override
     public void pause() {
+
     }
 
     @Override
     public void resume() {
+
     }
 
     @Override
