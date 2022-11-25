@@ -8,8 +8,8 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.useVsync(true);
 		config.setForegroundFPS(60);
-//		config.setWindowIcon("badlogic.jpg");
-		config.setTitle("projx");
+		config.setWindowIcon("logo.png");
+		config.setTitle("TANK STARS");
 		new Lwjgl3Application(new MyGdxGame(), config);
 	}
 }
