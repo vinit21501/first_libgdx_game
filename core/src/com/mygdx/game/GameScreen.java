@@ -29,7 +29,7 @@ public class GameScreen implements Screen {
         backGround = new TextureRegion(new Texture("BACKGROUND/bg6.png"));
         missile = new Missile(-300, 300, 100, 60);
         button = myGame.button;
-        accumulator = 0;
+        accumulator = 2;
         platform.renderBody(myGame.world);
         missile.render(myGame.world);
         player1.render(myGame.world);
