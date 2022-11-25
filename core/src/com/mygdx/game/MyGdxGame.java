@@ -39,9 +39,8 @@ public class MyGdxGame extends Game {
 		scalePort = new StretchViewport(Utils.width, Utils.height, gamCam);
 		debugRenderer = new Box2DDebugRenderer();
 		world = new World(new Vector2(0, -9.8f), true);
-//		mainScreen = new MainScreen(this);
-//		this.setScreen(mainScreen);
-		setScreen(new GameScreen(this));
+		mainScreen = new MainScreen(this);
+		this.setScreen(mainScreen);
 	}
 
 	@Override
