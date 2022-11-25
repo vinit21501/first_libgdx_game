@@ -10,31 +10,27 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import java.awt.*;
 
 public class GameScreen implements Screen {
-    final MyGdxGame myGame;
-    TextureRegion backGround;
-    private Missile missile;
-    private Terrain platform;
-    private float accumulator;
-    Tank player1;
-    Tank player2;
+    private final MyGdxGame myGame;
+    private final TextureRegion backGround;
+    private final Missile missile;
+    private final Terrain platform;
+    private final Tank player1;
+    private final Tank player2;
+    private final Button button;
     public GameScreen(MyGdxGame myGame) {
         this.myGame = myGame;
         platform = new Terrain();
         player1 = new Tank(300, 0, 4, true);
         player2 = new Tank(-200, 0, false);
-        accumulator = 1;
         backGround = new TextureRegion(new Texture("BACKGROUND/bg6.png"));
         missile = new Missile(-300, 300, 100, 60);
+        button = myGame.button;
+        button.addPauseButton();
     }
 
     @Override
     public void show() {
         platform.renderBody(myGame.world);
-//        PolygonShape shape = new PolygonShape();
-//        shape.setAsBox(1280, 720);
-//        Body body = myGame.world.createBody(platform.bodyDef);
-//        body.createFixture(shape, 1f);
-//        shape.dispose();
         missile.render(myGame.world);
         player1.render(myGame.world);
         player2.render(myGame.world);
@@ -42,37 +38,25 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        myGame.gamCam.update();
         myGame.batch.begin();
-        myGame.batch.draw(backGround, 0, 0);
+        myGame.batch.draw(backGround, -Utils.width / 2f, -Utils.height / 2f, Utils.width, Utils.height);
         missile.update(myGame.batch);
         player1.update(myGame.batch);
         platform.update();
 //        player1.move();
         player2.update(myGame.batch);
-        player2.move();
+//        player2.move();
         myGame.batch.end();
         myGame.polyBatch.begin();
         platform.renderTexture(myGame.polyBatch);
         myGame.polyBatch.end();
+        button.render(delta);
         myGame.debugRenderer.render(myGame.world, myGame.gamCam.combined);
-        update(delta);
-    }
-
-    public void update(float deltaTime) {
-        float frameTime = Math.min(deltaTime, 0.25f);
-        accumulator += frameTime;
-        while (accumulator >= Utils.TIME_STEP) {
-            accumulator -= Utils.TIME_STEP;
-            myGame.world.step(Utils.TIME_STEP, Utils.VELOCITY_ITERATIONS, Utils.POSITION_ITERATIONS);
-        }
     }
 
     @Override
     public void resize(int width, int height) {
-        myGame.scalePort.update(width, height);
+        myGame.resize(width, height);
     }
 
     @Override

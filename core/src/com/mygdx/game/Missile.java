@@ -11,12 +11,11 @@ import com.badlogic.gdx.physics.box2d.*;
 
 
 public class Missile {
-    private TextureRegion misssleTexture;
-    private float speed;
-    float x, y;
-    boolean remove;
-    float missleHeight, missleWidth, scale;
-    private BodyDef misdef;
+    private final TextureRegion misssleTexture;
+    private final float speed;
+    private float x, y;
+    private boolean remove;
+    private float missleHeight, missleWidth, scale;
     private Body missle;
     private float degrees;
     private PolygonShape shap;
@@ -32,7 +31,7 @@ public class Missile {
         misssleTexture = new TextureRegion(new Texture("WEAPONS/missile1.png"));
     }
     public void render(World world) {
-        misdef = new BodyDef();
+        BodyDef misdef = new BodyDef();
         misdef.type = BodyDef.BodyType.DynamicBody;
         misdef.position.set(x, y);
 
@@ -41,7 +40,6 @@ public class Missile {
         missle = world.createBody(misdef);
 
         shap = new PolygonShape();
-//        float t = (float)Math.tanh(missle.getLinearVelocity().y / missle.getLinearVelocity().x);
         shap.setAsBox(missleWidth, missleHeight);
         missle.createFixture(shap, 0.2f);
         shap.dispose();
@@ -57,7 +55,6 @@ public class Missile {
 //        for (JointEdge collide : missle.getJointList()) {
 //            collide.joint.getBodyA().destroyFixture(misdef);
 //        }
-//        missle.setTransform(missle.getPosition().x, missle.getPosition().y, missle.getAngle());
-        batch.draw(misssleTexture, ((missle.getPosition().x + Utils.width / 2) / 2f) - missleWidth/ 2f, ((missle.getPosition().y + Utils.height / 2) / 1.5f) - missleHeight / 2f, missleWidth/ 2f, missleHeight / 2f, missleWidth, missleHeight, 2f, 2f, (float) Math.toDegrees(missle.getAngle()));
+        batch.draw(misssleTexture, missle.getPosition().x - missleWidth / 2f, missle.getPosition().y - missleHeight / 2f, missleWidth / 2f, missleHeight / 2f, missleWidth, missleHeight, 3f, 3f, (float) Math.toDegrees(missle.getAngle()));
     }
 }

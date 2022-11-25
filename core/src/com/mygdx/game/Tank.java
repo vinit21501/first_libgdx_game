@@ -11,22 +11,22 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.WheelJointDef;
 
 public class Tank {
-    Body body;
-    BodyDef bodyDef;
-    Texture texture;
-    TextureRegion textRegion;
-    float length;
-    float breadth;
-    float density;
-    float[] points;
-    FixtureDef tankfixdef;
-    FixtureDef wheelfixdef;
-    CircleShape wheels;
-    Body[] wheel;
-    Joint[] jointarr;
-    WheelJointDef[] joints;
-    int numWheel;
-    PolygonShape shape;
+    private Body body;
+    private BodyDef bodyDef;
+    private Texture texture;
+    private TextureRegion textRegion;
+    private float length;
+    private float breadth;
+    private float density;
+    private float[] points;
+    private FixtureDef tankfixdef;
+    private FixtureDef wheelfixdef;
+    private CircleShape wheels;
+    private Body[] wheel;
+    private Joint[] jointarr;
+    private WheelJointDef[] joints;
+    private int numWheel;
+    private PolygonShape shape;
     Tank(float x, float y, int type, boolean flip) {
         bodyDef = new BodyDef();
         bodyDef.position.set(x, y);
@@ -90,24 +90,24 @@ public class Tank {
         }
     }
     public void move() {
-        body.setGravityScale(5);
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            for (WheelJointDef t : joints){
-//                body.setLinearVelocity(-100, 0);
-                t.enableMotor = true;
-                t.motorSpeed = -1000000;
-            }
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            for (WheelJointDef t : joints){
-//                body.setLinearVelocity(100, 0);
-                t.enableMotor = true;
-                t.motorSpeed = 10000000;
-            }
-        }
+//        body.setGravityScale(5);
+//        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+//            for (WheelJointDef t : joints){
+////                body.setLinearVelocity(-100, 0);
+//                t.enableMotor = true;
+//                t.motorSpeed = -1000000;
+//            }
+//        }
+//        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+//            for (WheelJointDef t : joints){
+////                body.setLinearVelocity(100, 0);
+//                t.enableMotor = true;
+//                t.motorSpeed = 10000000;
+//            }
+//        }
     }
     public void update(SpriteBatch batch) {
 //        batch.draw(textRegion, (body.getPosition().x + Utils.width / 2) / 2f, (body.getPosition().y + Utils.height / 2) / 1.5f, length, breadth);
-        batch.draw(textRegion, ((body.getPosition().x + Utils.width / 2) / 2f) - 5, ((body.getPosition().y + Utils.height / 2) / 1.5f) - 5,0, 0, length, breadth, 1, 1, (float) Math.toDegrees(body.getAngle()));
+        batch.draw(textRegion, body.getPosition().x, body.getPosition().y - 5,0, 0, length, breadth, 1.5f, 1.5f, (float) Math.toDegrees(body.getAngle()));
     }
 }
