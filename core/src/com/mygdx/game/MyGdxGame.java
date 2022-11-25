@@ -31,11 +31,11 @@ public class MyGdxGame extends Game {
 		polyBatch = new PolygonSpriteBatch();
 		font = new BitmapFont();
 		multiplexer = new InputMultiplexer();
+		Gdx.input.setInputProcessor(multiplexer);
 		button = new Button(this);
 		gamCam = new OrthographicCamera();
 		scalePort = new StretchViewport(Utils.width, Utils.height, gamCam);
 		debugRenderer = new Box2DDebugRenderer();
-		Gdx.input.setInputProcessor(multiplexer);
 		world = new World(new Vector2(0, -9.8f), true);
 		this.setScreen(new MainScreen(this));
 		accumulator = 2;
@@ -54,7 +54,6 @@ public class MyGdxGame extends Game {
 			world.step(Utils.TIME_STEP, Utils.VELOCITY_ITERATIONS, Utils.POSITION_ITERATIONS);
 		}
 		super.render();
-//		gamCam.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 
 	@Override
