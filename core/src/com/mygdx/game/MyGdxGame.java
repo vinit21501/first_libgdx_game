@@ -66,7 +66,6 @@ public class MyGdxGame extends Game {
 	@Override
 	public void dispose () {
 		batch.dispose();
-		font.dispose();
 		world.dispose();
 		polyBatch.dispose();
 		button.dispose();

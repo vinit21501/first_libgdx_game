@@ -48,11 +48,11 @@ public class MainScreen implements Screen {
 
     @Override
     public void hide() {
-        dispose();
+
     }
 
     @Override
     public void dispose() {
-        myGame.dispose();
+        myGame.batch.dispose();
     }
 }

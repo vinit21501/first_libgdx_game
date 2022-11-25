@@ -45,7 +45,7 @@ public class GameScreen implements Screen {
         platform.update();
 //        player1.move();
         player2.update(myGame.batch);
-//        player2.move();
+        player2.move();
         myGame.batch.end();
         myGame.polyBatch.begin();
         platform.renderTexture(myGame.polyBatch);
@@ -76,6 +76,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void dispose() {
-        myGame.dispose();
+        myGame.batch.dispose();
+        myGame.world.dispose();
     }
 }

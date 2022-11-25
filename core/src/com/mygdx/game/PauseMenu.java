@@ -50,11 +50,11 @@ public class PauseMenu implements Screen {
 
     @Override
     public void hide() {
-
+        dispose();
     }
 
     @Override
     public void dispose() {
-        button.dispose();
+        myGame.batch.dispose();
     }
 }

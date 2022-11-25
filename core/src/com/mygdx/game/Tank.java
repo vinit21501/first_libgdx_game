@@ -90,21 +90,21 @@ public class Tank {
         }
     }
     public void move() {
-//        body.setGravityScale(5);
-//        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-//            for (WheelJointDef t : joints){
-////                body.setLinearVelocity(-100, 0);
-//                t.enableMotor = true;
-//                t.motorSpeed = -1000000;
-//            }
-//        }
-//        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-//            for (WheelJointDef t : joints){
-////                body.setLinearVelocity(100, 0);
-//                t.enableMotor = true;
-//                t.motorSpeed = 10000000;
-//            }
-//        }
+        body.setGravityScale(5);
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            for (WheelJointDef t : joints){
+//                body.setLinearVelocity(-100, 0);
+                t.enableMotor = true;
+                t.motorSpeed = -1000000;
+            }
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            for (WheelJointDef t : joints){
+//                body.setLinearVelocity(100, 0);
+                t.enableMotor = true;
+                t.motorSpeed = 10000000;
+            }
+        }
     }
     public void update(SpriteBatch batch) {
 //        batch.draw(textRegion, (body.getPosition().x + Utils.width / 2) / 2f, (body.getPosition().y + Utils.height / 2) / 1.5f, length, breadth);
