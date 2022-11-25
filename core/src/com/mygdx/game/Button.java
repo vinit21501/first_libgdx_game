@@ -23,7 +23,7 @@ public class Button {
     public Stage stage;
     private float buttonHeight, buttonWidth;
     private Table table;
-    boolean setter, resize;
+    private boolean setter, resize;
     private TextButton newGame, exitButton, loadButton, resumeButton, mainMenuButton, pauseButton;
     Button(MyGdxGame mygame) {
         this.mygame = mygame;
@@ -75,7 +75,8 @@ public class Button {
             public void clicked(InputEvent event, float x, float y) {
                 table.reset();
                 resize = true;
-                if (mygame.gameScreen == null) mygame.gameScreen = new GameScreen(mygame);
+//                mygame.gameScreen.dispose();
+                mygame.gameScreen = new GameScreen(mygame);
                 mygame.setScreen(mygame.gameScreen);
             }
         });
@@ -96,6 +97,13 @@ public class Button {
     public void addLoadButton() {
         loadButton = new TextButton("LOAD GAME", buttonStyle);
         table.add(loadButton).space(Utils.buttonPadding).row();
+        loadButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (mygame.gameScreen == null) mygame.gameScreen = new GameScreen(mygame);
+                mygame.setScreen(mygame.gameScreen);
+            }
+        });
     }
     public void addExitButton() {
         exitButton = new TextButton("QUIT", buttonStyle);

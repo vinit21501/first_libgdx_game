@@ -94,12 +94,12 @@ public class Tank {
         body.setGravityScale(5);
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             for (WheelJoint t : jointarr){
-                t.setMotorSpeed(5);
+                t.setMotorSpeed(6);
             }
         }
         else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             for (WheelJoint t : jointarr){
-                t.setMotorSpeed(-5);
+                t.setMotorSpeed(-6);
             }
         }
         else {

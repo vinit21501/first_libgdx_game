@@ -7,9 +7,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class PauseMenu implements Screen {
-    Button button;
-    MyGdxGame myGame;
-    TextureRegion backGround;
+    private Button button;
+    private MyGdxGame myGame;
+    private TextureRegion backGround;
     PauseMenu(MyGdxGame game) {
         myGame = game;
         backGround = new TextureRegion(new Texture("BACKGROUND/bg1.png"));

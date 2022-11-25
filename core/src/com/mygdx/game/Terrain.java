@@ -13,15 +13,15 @@ import com.badlogic.gdx.math.EarClippingTriangulator;
 import com.badlogic.gdx.physics.box2d.*;
 
 public class Terrain {
-    float[] heights;
-    float SLICE_WIDTH;
-    Body body;
-    BodyDef bodyDef;
-    TextureRegion textRegion;
-    Texture texture;
-    float[] actualHeight;
-    PolygonRegion polygonRegion;
-    PolygonSprite poly;
+    private float[] heights;
+    private float SLICE_WIDTH;
+    private Body body;
+    private BodyDef bodyDef;
+    private TextureRegion textRegion;
+    private Texture texture;
+    private float[] actualHeight;
+    private PolygonRegion polygonRegion;
+    private PolygonSprite poly;
     private void createSlice(float x, int index, int scale) {
         heights[index] = x * scale;
         heights[index + 1] = -100 + ((float) (-0.143 * Math.sin(1.75 * (x + 1.73)) - 0.180 * Math.sin(2.96 * (x+4.98)) - 0.012 * Math.sin(6.23 * (x+3.17)) + 0.088 * Math.sin(8.07 * (x+4.63))) * scale);
