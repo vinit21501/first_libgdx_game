@@ -1,5 +1,6 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -41,6 +42,7 @@ public class MyGdxGame extends Game {
 		world = new World(new Vector2(0, -9.8f), true);
 		mainScreen = new MainScreen(this);
 		this.setScreen(mainScreen);
+		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 	}
 
 	@Override
