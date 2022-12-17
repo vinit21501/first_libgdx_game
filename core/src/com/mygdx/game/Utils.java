@@ -11,4 +11,13 @@ public class Utils {
     static public int POSITION_ITERATIONS = 2;
     static public float height = 720;
     static public float width = 1280;
+    static private float accumulator;
+
+    public static float getAccumulator() {
+        return accumulator;
+    }
+
+    public static void setAccumulator(float accumulator) {
+        Utils.accumulator = accumulator;
+    }
 }

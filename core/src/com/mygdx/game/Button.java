@@ -20,7 +20,7 @@ public class Button {
     private final TextButton.TextButtonStyle buttonStyle;
     private TextureRegionDrawable up, down, pause;
     private MyGdxGame mygame;
-    public Stage stage;
+    private Stage stage;
     private float buttonHeight, buttonWidth;
     private Table table;
     private boolean setter, resize;
@@ -141,6 +141,11 @@ public class Button {
             }
         }
     }
+
+    public Stage getStage() {
+        return stage;
+    }
+
     public void render(float delta) {
         if (resize) {
             stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);

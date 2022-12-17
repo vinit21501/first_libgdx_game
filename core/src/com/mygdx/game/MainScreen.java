@@ -17,11 +17,10 @@ public class MainScreen implements Screen {
 
     @Override
     public void show() {
-        button = myGame.button;
-        button.addNewGameButton();
-        button.addResumeButton();
-        button.addLoadButton();
-        button.addExitButton();
+        myGame.button.addNewGameButton();
+        myGame.button.addResumeButton();
+        myGame.button.addLoadButton();
+        myGame.button.addExitButton();
     }
 
     @Override
@@ -33,7 +32,7 @@ public class MainScreen implements Screen {
         myGame.batch.begin();
         myGame.batch.draw(backGround, -Utils.width / 2f , -Utils.height / 2f, Utils.width, Utils.height);
         myGame.batch.end();
-        button.render(delta);
+        myGame.button.render(delta);
     }
 
     @Override
