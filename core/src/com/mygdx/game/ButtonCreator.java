@@ -2,30 +2,27 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 
-public class Button {
-    private final TextButton.TextButtonStyle buttonStyle;
+public class ButtonCreator {
+    private final TextButton.TextButtonStyle buttonStyle, pauseButtonStyle;
     private TextureRegionDrawable up, down, pause;
     private MyGdxGame mygame;
     private Stage stage;
-    private float buttonHeight, buttonWidth;
     private Table table;
     private boolean setter, resize;
-    private TextButton newGame, exitButton, loadButton, resumeButton, mainMenuButton, pauseButton;
-    Button(MyGdxGame mygame) {
+    private TextButton newGame, exitButton, loadButton, resumeButton, mainMenuButton, fireButton;
+    private Button pauseButton;
+    ButtonCreator(MyGdxGame mygame) {
         this.mygame = mygame;
         up = new TextureRegionDrawable(new TextureRegion(new Texture("BUTTON/up.png")));
         down = new TextureRegionDrawable(new TextureRegion(new Texture("BUTTON/down.png")));
@@ -34,20 +31,17 @@ public class Button {
         setter = false;
         resize = false;
         stage = new Stage(new ScreenViewport());
-//        stage = new Stage(new StretchViewport(1280, 720));
         stage.addActor(table);
         buttonStyle = new TextButton.TextButtonStyle();
+        pauseButtonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = mygame.font;
         buttonStyle.up = up;
         buttonStyle.down = down;
-        buttonHeight = Utils.buttonHeight;
-        buttonWidth = Utils.buttonWidth;
+        pauseButtonStyle.down = pauseButtonStyle.up = pause;
         mygame.multiplexer.addProcessor(stage);
     }
     public void addPauseButton() {
-        buttonStyle.up = pause;
-        buttonStyle.down = pause;
-        pauseButton = new TextButton("", buttonStyle);
+        pauseButton = new Button(pauseButtonStyle);
         pauseButton.setSize(Gdx.graphics.getWidth() / 100f * 4f, Gdx.graphics.getHeight() / 100f * 6f);
         pauseButton.setPosition(0, Gdx.graphics.getHeight() / 100f * 90f);
         setter = true;
@@ -56,8 +50,6 @@ public class Button {
         pauseButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                buttonStyle.up = up;
-                buttonStyle.down = down;
                 stage.clear();
                 stage.addActor(table);
                 setter = false;
@@ -67,9 +59,18 @@ public class Button {
             }
         });
     }
+    public TextButton addFireButton() {
+        fireButton = new TextButton("FIRE", buttonStyle);
+        fireButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                GameScreen.setFired(true);
+            }
+        });
+        return fireButton;
+    }
     public void addNewGameButton() {
         newGame = new TextButton("NEW GAME", buttonStyle);
-        table.add(newGame).space(Utils.buttonPadding).row();
         newGame.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -80,10 +81,11 @@ public class Button {
                 mygame.setScreen(mygame.gameScreen);
             }
         });
+        table.add(newGame).space(Utils.getButtonPadding()).row();
     }
     public void addMainMenuButton() {
         mainMenuButton = new TextButton("MAIN MENU", buttonStyle);
-        table.add(mainMenuButton).space(Utils.buttonPadding).row();
+        table.add(mainMenuButton).space(Utils.getButtonPadding()).row();
         mainMenuButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -96,10 +98,12 @@ public class Button {
     }
     public void addLoadButton() {
         loadButton = new TextButton("LOAD GAME", buttonStyle);
-        table.add(loadButton).space(Utils.buttonPadding).row();
+        table.add(loadButton).space(Utils.getButtonPadding()).row();
         loadButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                table.reset();
+                resize = true;
                 if (mygame.gameScreen == null) mygame.gameScreen = new GameScreen(mygame);
                 mygame.setScreen(mygame.gameScreen);
             }
@@ -107,7 +111,7 @@ public class Button {
     }
     public void addExitButton() {
         exitButton = new TextButton("QUIT", buttonStyle);
-        table.add(exitButton).space(Utils.buttonPadding).row();
+        table.add(exitButton).space(Utils.getButtonPadding()).row();
         exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -117,7 +121,7 @@ public class Button {
     }
     public void addResumeButton() {
         resumeButton = new TextButton("RESUME GAME", buttonStyle);
-        table.add(resumeButton).space(Utils.buttonPadding).row();
+        table.add(resumeButton).space(Utils.getButtonPadding()).row();
         resumeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -132,12 +136,12 @@ public class Button {
         stage.getViewport().update(width, height, true);
         if (setter) {
             pauseButton.setSize(width / 100f * 4f, height / 100f * 6f);
-            pauseButton.setPosition(0, Gdx.graphics.getHeight() / 100f * 90);
+            pauseButton.setPosition(0, height / 100f * 90);
         }
         else {
             table.setSize(width, height);
             for(Cell t: table.getCells()) {
-                t.size(width / 100f * 25, height / 100f * 10);
+                t.size(width / 100f * Utils.getButtonWidth(), height / 100f * Utils.getButtonHeight());
             }
         }
     }
@@ -151,7 +155,7 @@ public class Button {
             stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
             table.setSize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             for(Cell t: table.getCells()) {
-                t.size(Gdx.graphics.getWidth() / 100f * 25, Gdx.graphics.getHeight() / 100f * 10);
+                t.size(Gdx.graphics.getWidth() / 100f * Utils.getButtonWidth(), Gdx.graphics.getHeight() / 100f * Utils.getButtonHeight());
             } resize = false;
         }
         stage.act(delta);

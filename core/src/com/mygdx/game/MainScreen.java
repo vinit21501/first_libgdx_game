@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class MainScreen implements Screen {
     private MyGdxGame myGame;
     private TextureRegion backGround;
-    private Button button;
+    private ButtonCreator buttonCreator;
     MainScreen(MyGdxGame game) {
         myGame = game;
         backGround = new TextureRegion(new Texture("BACKGROUND/mainMenu.png"));
@@ -17,10 +17,10 @@ public class MainScreen implements Screen {
 
     @Override
     public void show() {
-        myGame.button.addNewGameButton();
-        myGame.button.addResumeButton();
-        myGame.button.addLoadButton();
-        myGame.button.addExitButton();
+        myGame.buttonCreator.addNewGameButton();
+        myGame.buttonCreator.addResumeButton();
+        myGame.buttonCreator.addLoadButton();
+        myGame.buttonCreator.addExitButton();
     }
 
     @Override
@@ -30,9 +30,9 @@ public class MainScreen implements Screen {
         myGame.batch.setProjectionMatrix(myGame.gamCam.combined);
         myGame.gamCam.update();
         myGame.batch.begin();
-        myGame.batch.draw(backGround, -Utils.width / 2f , -Utils.height / 2f, Utils.width, Utils.height);
+        myGame.batch.draw(backGround, -Utils.getWidth() / 2f , -Utils.getHeight() / 2f, Utils.getWidth(), Utils.getHeight());
         myGame.batch.end();
-        myGame.button.render(delta);
+        myGame.buttonCreator.render(delta);
     }
 
     @Override
@@ -57,6 +57,6 @@ public class MainScreen implements Screen {
     @Override
     public void dispose() {
         myGame.batch.dispose();
-        button.dispose();
+        buttonCreator.dispose();
     }
 }

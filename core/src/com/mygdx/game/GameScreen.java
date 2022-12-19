@@ -3,97 +3,64 @@ package com.mygdx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Align;
-import sun.jvm.hotspot.ui.ObjectHistogramPanel;
-
-import java.awt.*;
-import java.security.Key;
 
 public class GameScreen implements Screen {
-    private final MyGdxGame myGame;
-    private final TextureRegion backGround;
-    private final Missile missile;
+    private static MyGdxGame myGame;
+    private static TextureRegion backGround;
+    private Missile missile;
     private final Terrain platform;
-    private final Tank player1;
-    private final Tank player2;
-    private final Button button;
-    private Touchpad.TouchpadStyle touchpadStyle;
-    private Skin touchPadSkin;
-    private Touchpad touchpad;
-    private float deltaX, deltaY;
-    Stage stage;
+    private Tank player1;
+    private Tank player2;
+    private final ButtonCreator buttonCreator;
+    private static Touchpad.TouchpadStyle touchPadStyle, moveTouchPadStyle;
+    private static Skin touchPadSkin;
+    private static Touchpad touchpad, moveTouchPad;
+    private static Stage stage;
+    private static Table table;
+    private static boolean fired, turn;
     public GameScreen(MyGdxGame myGame) {
-        this.myGame = myGame;
+        fired = false;
+        turn = true;
+        GameScreen.myGame = myGame;
         platform = new Terrain();
-        player1 = new Tank(300, 0, 5, false);
-        player2 = new Tank(-200, 0, 6, true);
+        player1 = new Tank(100, 0, 5, false);
+        player2 = new Tank(-300, 0, 3, true);
         backGround = new TextureRegion(new Texture("BACKGROUND/bg6.png"));
-        missile = new Missile(0, 100, 100, -60);
-        button = myGame.button;
-        Utils.setAccumulator(0);
+        missile = new Missile();
+        buttonCreator = myGame.buttonCreator;
+        Utils.setAccumulator(0.005f);
         touchPadSkin = new Skin();
-        touchPadSkin.add("background", new Texture("BUTTON/TouchpadButton.png"));
+        touchPadSkin.add("background1", new Texture("BUTTON/TouchpadButton1.png"));
+        touchPadSkin.add("background2", new Texture("BUTTON/TouchpadButton2.png"));
         touchPadSkin.add("knob", new Texture("BUTTON/TouchpadKnob.png"));
-        touchpadStyle = new Touchpad.TouchpadStyle(touchPadSkin.getDrawable("background"), touchPadSkin.getDrawable("knob"));
-        touchpad = new Touchpad(10, touchpadStyle);
-        touchpad.setBounds(15, 15, 100, 100);
-        touchpad.addListener(new InputListener() {
-            Vector2 p = new Vector2();
-            com.badlogic.gdx.math.Rectangle b = new Rectangle();
-            @Override
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                if (event.getTarget() != touchpad) {
-                    b.set(touchpad.getX(), touchpad.getY(), touchpad.getWidth(), touchpad.getHeight());
-                    b.setCenter(x, y);
-                    touchpad.setBounds(b.x, b.y, b.width, b.height);
-                    touchpad.fire(event);
-                }
-                return true;
-            }
-            @Override
-            public void touchDragged(InputEvent event, float x, float y, int pointer) {
-                touchpad.stageToLocalCoordinates(p.set(x, y));
-                if (touchpad.hit(p.x, p.y, true) == null) {
-                    p.set(-touchpad.getKnobPercentX(), -touchpad.getKnobPercentY()).nor()
-                            .scl(Math.min(touchpad.getWidth(), touchpad.getHeight()) * 0.5f)
-                            .add(x, y);
-                    touchpad.addAction(Actions.moveToAligned(p.x, p.y, Align.center, 0.15f));
-                }
-            }
-            @Override
-            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                touchpad.clearActions();
-                touchpad.addAction(Actions.moveTo(15, 15, 0.15f));
-            }
-        });
+        touchPadStyle = new Touchpad.TouchpadStyle(touchPadSkin.getDrawable("background1"), touchPadSkin.getDrawable("knob"));
+        touchpad = new Touchpad(10, touchPadStyle);
+        moveTouchPadStyle = new Touchpad.TouchpadStyle(touchPadSkin.getDrawable("background2"), touchPadSkin.getDrawable("knob"));
+        moveTouchPad = new Touchpad(0, moveTouchPadStyle);
+        moveTouchPad.setSize(150, 50);
         stage = new Stage();
-        stage.addActor(touchpad);
+        table = new Table();
+        stage.addActor(table);
+        table.add(touchpad).size(Gdx.graphics.getWidth() * 7 / 64f, Gdx.graphics.getHeight() * 7 / 36f).padRight(Gdx.graphics.getWidth() * 15 / 64f);
+        table.add(buttonCreator.addFireButton()).size(Gdx.graphics.getWidth() * 6 / 64f, Gdx.graphics.getHeight() * 4 / 36f).padRight(Gdx.graphics.getWidth() * 15 / 64f);
+        table.add(moveTouchPad).size(Gdx.graphics.getWidth() * 15 / 128f, Gdx.graphics.getHeight() * 7 / 72f);
         myGame.multiplexer.addProcessor(stage);
         platform.renderBody(myGame.world);
-        missile.render(myGame.world);
-        player1.render(myGame.world);
-        player2.render(myGame.world);
+    }
+
+    public static void setFired(boolean fired) {
+        GameScreen.fired = fired;
     }
 
     @Override
     public void show() {
-        button.addPauseButton();
+        buttonCreator.addPauseButton();
     }
 
     @Override
@@ -103,41 +70,46 @@ public class GameScreen implements Screen {
         myGame.batch.setProjectionMatrix(myGame.gamCam.combined);
         myGame.gamCam.update();
         myGame.batch.begin();
-        myGame.batch.draw(backGround, -Utils.width / 2f, -Utils.height / 2f, Utils.width, Utils.height);
+        myGame.batch.draw(backGround, -Utils.getWidth() / 2f, -Utils.getHeight() / 2f, Utils.getWidth(), Utils.getHeight());
         myGame.batch.end();
         myGame.polyBatch.begin();
         platform.renderTexture(myGame.polyBatch);
         myGame.polyBatch.end();
         myGame.batch.begin();
-        missile.update(myGame.batch);
-        player1.update(myGame.batch);
-        player2.update(myGame.batch);
+        player1.update(myGame);
+        player2.update(myGame);
         platform.update();
-//        player1.move();
-        if (touchpad.isTouched()) player2.move(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
-//        touchpad.draw(myGame.batch, 1);
-//        touchpad.layout();
+        if (!fired) {
+            if (turn) player2.move(touchpad,  moveTouchPad.getKnobPercentX());
+            else player1.move(touchpad, moveTouchPad.getKnobPercentX());
+        } else {
+//            Utils.writes(player1);
+            if (turn) missile.update(myGame, player2);
+            else missile.update(myGame, player1);
+        }
+        moveTouchPad.draw(myGame.batch,1);
         myGame.batch.end();
+        stage.getViewport().update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         stage.act(delta);
         stage.draw();
-        button.render(delta);
+        buttonCreator.render(delta);
         updateWorld();
-//        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) updateWorld();
-//        if (Gdx.input.isKeyPressed(Input.Keys.F)) myGame.world.dispose();
         myGame.debugRenderer.render(myGame.world, myGame.gamCam.combined);
     }
 
     @Override
     public void resize(int width, int height) {
+        stage.getViewport().update(width, height);
+        table.setBounds(0, -height / 3f, width, height);
         myGame.resize(width, height);
     }
     public void updateWorld() {
         float accuStep = Utils.getAccumulator();
         float frameTime = Math.min(Gdx.graphics.getDeltaTime(), 0.25f);
         accuStep += frameTime;
-        while (accuStep >= Utils.TIME_STEP) {
-            myGame.world.step(Utils.TIME_STEP, Utils.VELOCITY_ITERATIONS, Utils.POSITION_ITERATIONS);
-            accuStep -= Utils.TIME_STEP;
+        while (accuStep >= Utils.getTimeStep()) {
+            myGame.world.step(Utils.getTimeStep(), Utils.getVelocityIterations(), Utils.getPositionIterations());
+            accuStep -= Utils.getTimeStep();
         }
     }
 
@@ -154,14 +126,13 @@ public class GameScreen implements Screen {
     @Override
     public void hide() {
     }
-
     @Override
     public void dispose() {
         myGame.world.dispose();
         myGame.debugRenderer.dispose();
         myGame.batch.dispose();
         stage.dispose();
-        myGame.button.dispose();
+        myGame.buttonCreator.dispose();
         myGame.polyBatch.dispose();
     }
 }

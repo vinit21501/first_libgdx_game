@@ -1,14 +1,10 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.PolygonSprite;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.EarClippingTriangulator;
 import com.badlogic.gdx.physics.box2d.*;
 
@@ -34,10 +30,10 @@ public class Terrain {
             createSlice(x, index, 215);
             index += 2;
         }
-        heights[250] = Utils.width / 2;
-        heights[251] = -Utils.height / 2;
-        heights[252] = -Utils.width / 2;
-        heights[253] = -Utils.height / 2;
+        heights[250] = Utils.getWidth() / 2;
+        heights[251] = -Utils.getHeight() / 2;
+        heights[252] = -Utils.getWidth() / 2;
+        heights[253] = -Utils.getHeight() / 2;
         heights[254] = heights[0];
         heights[255] = heights[1];
         bodyDef = new BodyDef();
@@ -47,8 +43,8 @@ public class Terrain {
         textRegion = new TextureRegion(texture);
         actualHeight = new float[256];
         for (int i = 0; i < 256; ++i) {
-            if (i % 2 == 0) actualHeight[i] = (heights[i] + Utils.width / 2) / 2f;
-            else actualHeight[i] = (heights[i] + Utils.height / 2) / 1.5f;
+            if (i % 2 == 0) actualHeight[i] = (heights[i] + Utils.getWidth() / 2);
+            else actualHeight[i] = (heights[i] + Utils.getHeight() / 2);
         }
         polygonRegion = new PolygonRegion(textRegion, actualHeight, new EarClippingTriangulator().computeTriangles(actualHeight).toArray());
         poly = new PolygonSprite(polygonRegion);

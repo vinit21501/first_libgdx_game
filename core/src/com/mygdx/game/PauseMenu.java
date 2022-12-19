@@ -7,21 +7,21 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class PauseMenu implements Screen {
-    private Button button;
+    private ButtonCreator buttonCreator;
     private MyGdxGame myGame;
     private TextureRegion backGround;
     PauseMenu(MyGdxGame game) {
         myGame = game;
         backGround = new TextureRegion(new Texture("BACKGROUND/bg1.png"));
-        button = myGame.button;
+        buttonCreator = myGame.buttonCreator;
     }
 
     @Override
     public void show() {
-        button.addMainMenuButton();
-        button.addResumeButton();
-        button.addLoadButton();
-        button.addExitButton();
+        buttonCreator.addMainMenuButton();
+        buttonCreator.addResumeButton();
+        buttonCreator.addLoadButton();
+        buttonCreator.addExitButton();
     }
 
     @Override
@@ -31,9 +31,9 @@ public class PauseMenu implements Screen {
         myGame.batch.setProjectionMatrix(myGame.gamCam.combined);
         myGame.gamCam.update();
         myGame.batch.begin();
-        myGame.batch.draw(backGround, -Utils.width / 2f, -Utils.height / 2f, Utils.width, Utils.height);
+        myGame.batch.draw(backGround, -Utils.getWidth() / 2f, -Utils.getHeight() / 2f, Utils.getWidth(), Utils.getHeight());
         myGame.batch.end();
-        button.render(delta);
+        buttonCreator.render(delta);
     }
 
     @Override
@@ -58,6 +58,6 @@ public class PauseMenu implements Screen {
     @Override
     public void dispose() {
         myGame.batch.dispose();
-        button.dispose();
+        buttonCreator.dispose();
     }
 }

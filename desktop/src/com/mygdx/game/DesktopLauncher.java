@@ -10,6 +10,7 @@ public class DesktopLauncher {
 		config.setForegroundFPS(60);
 		config.setWindowIcon("logo.png");
 		config.setTitle("TANK STARS");
+		config.setWindowSizeLimits((int)Utils.getWidth(), (int)Utils.getHeight(), 1920, 1080);
 		new Lwjgl3Application(new MyGdxGame(), config);
 	}
 }
