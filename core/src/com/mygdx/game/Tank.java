@@ -39,7 +39,7 @@ public class Tank implements Serializable {
         this.x = x; this.y = y;
         this.name = name;
         numWheel = 5;
-        fuel = 50;
+        fuel = 100;
         this.type = type;
         this.flip = flip;
         fliping = true;
@@ -133,7 +133,8 @@ public class Tank implements Serializable {
             power = (float) Math.sqrt(Math.pow(touchpad.getKnobPercentX(), 2) + Math.pow(touchpad.getKnobPercentY(), 2));
         }
         if (moved > 0) {
-            if (--fuel > 0) {
+            fuel -= 0.2f;
+            if (fuel > 0) {
 //                if (flip) {
 //                    for (WheelJoint t : jointarr) t.setMotorSpeed(6);
 //                    body.setAngularVelocity(-Utils.getBarrelSpeed());
@@ -143,7 +144,8 @@ public class Tank implements Serializable {
 //                }
             }
         } else if (moved < 0) {
-            if (--fuel > 0) {
+            fuel -= 0.2f;
+            if (fuel > 0) {
 //                if (flip) {
 //                    for (WheelJoint t : jointarr) t.setMotorSpeed(-6);
 //                    body.setAngularVelocity(Utils.getBarrelSpeed());
@@ -232,10 +234,18 @@ public class Tank implements Serializable {
         }
     }
     public void updateHealth() {
-        body.setAngularVelocity(1000);
+        body.setAngularVelocity(30);
         health -= ThreadLocalRandom.current().nextFloat(20, 30);
     }
     public void fuelRecover() {
         this.fuel = 100;
+    }
+
+    public float getHealth() {
+        return health;
+    }
+
+    public float getFuel() {
+        return fuel;
     }
 }

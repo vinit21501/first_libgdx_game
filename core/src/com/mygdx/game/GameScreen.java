@@ -4,11 +4,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 
+import java.awt.*;
+import java.awt.geom.RectangularShape;
 import java.io.Serializable;
 
 public class GameScreen implements Screen, Serializable {
@@ -26,6 +31,8 @@ public class GameScreen implements Screen, Serializable {
     private static Table table;
     private static boolean fired, turn, healthPlayer1, healthPlayer2;
     private boolean firedS, turnS;
+    private static TextureRegion progressBackground, progressKnob, progressFuel;
+    private static Body box;
     public GameScreen(MyGdxGame myGame, int playerType1, int playerType2) {
         fired = false;
         turn = false;
@@ -33,6 +40,9 @@ public class GameScreen implements Screen, Serializable {
         healthPlayer2 = false;
         GameScreen.myGame = myGame;
         platform = new Terrain();
+        progressBackground = new TextureRegion(new Texture("BUTTON/ProgressBar.png"));
+        progressKnob = new TextureRegion(new Texture("BUTTON/ProgressBarKnob.png"));
+        progressFuel = new TextureRegion(new Texture("BUTTON/fuelProgressBar.png"));
         player1 = new Tank(100, 0, playerType1, true, "player1");
         player2 = new Tank(-300, 0, playerType2, false, "player2");
         backGround = new TextureRegion(new Texture("BACKGROUND/bg6.png"));
@@ -51,6 +61,16 @@ public class GameScreen implements Screen, Serializable {
         stage = new Stage();
         table = new Table();
         stage.addActor(table);
+        BodyDef def = new BodyDef();
+        def.position.set(-(Utils.getWidth() / 2) + 129, -Utils.getHeight() / 2 + 72);
+        def.type = BodyDef.BodyType.StaticBody;
+        box = myGame.getWorld().createBody(def);
+        PolygonShape shap = new PolygonShape();
+        shap.setAsBox(Utils.getWidth() - 128, Utils.getHeight());
+        FixtureDef fix = new FixtureDef();
+        fix.shape = shap;
+        box.createFixture(fix);
+        shap.dispose();
         table.add(touchpad).size(Gdx.graphics.getWidth() * 7 / 64f, Gdx.graphics.getHeight() * 7 / 36f).padRight(Gdx.graphics.getWidth() * 15 / 64f);
         table.add(buttonCreator.addFireButton()).size(Gdx.graphics.getWidth() * 6 / 64f, Gdx.graphics.getHeight() * 4 / 36f).padRight(Gdx.graphics.getWidth() * 15 / 64f);
         table.add(moveTouchPad).size(Gdx.graphics.getWidth() * 15 / 128f, Gdx.graphics.getHeight() * 7 / 72f);
@@ -78,6 +98,22 @@ public class GameScreen implements Screen, Serializable {
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        if (healthPlayer1) {
+            player1.updateHealth();
+            healthPlayer1 = false;
+            if (player1.getHealth() <= 0) {
+                myGame.getWinScreen().set("PLAYER 1 WINS");
+                myGame.setScreen(myGame.getWinScreen());
+            }
+        }
+        if (healthPlayer2) {
+            healthPlayer2 = false;
+            player2.updateHealth();
+            if (player2.getHealth() <= 0) {
+                myGame.getWinScreen().set("PLAYER 2 WINS");
+                myGame.setScreen(myGame.getWinScreen());
+            }
+        }
         myGame.getBatch().setProjectionMatrix(myGame.getGamCam().combined);
         myGame.getGamCam().update();
         myGame.getBatch().begin();
@@ -87,14 +123,10 @@ public class GameScreen implements Screen, Serializable {
         platform.renderTexture(myGame.getPolyBatch());
         myGame.getPolyBatch().end();
         myGame.getBatch().begin();
-        if (healthPlayer1) {
-            player1.updateHealth();
-            healthPlayer1 = false;
-        }
-        if (healthPlayer2) {
-            healthPlayer2 = false;
-            player2.updateHealth();
-        }
+        drawProgressBar(progressBackground, progressKnob, player1.getHealth(), 150, Utils.getHeight()/2f - 70);
+        drawProgressBar(progressBackground, progressKnob, player2.getHealth(), -400, Utils.getHeight()/2f - 70);
+        drawProgressBar(progressBackground, progressFuel, player1.getFuel(), 150, Utils.getHeight()/2f - 150);
+        drawProgressBar(progressBackground, progressFuel, player2.getFuel(), -400, Utils.getHeight()/2f - 150);
         player1.update(myGame);
         player2.update(myGame);
         platform.update();
@@ -114,7 +146,10 @@ public class GameScreen implements Screen, Serializable {
         updateWorld();
         myGame.getDebugRenderer().render(myGame.getWorld(), myGame.getGamCam().combined);
     }
-
+    public void drawProgressBar(TextureRegion textureRegion, TextureRegion texture, float i, float x, float y) {
+        myGame.getBatch().draw(textureRegion, x, y, 400, 50);
+        myGame.getBatch().draw(texture, x + (20f / i), y, 400 * i / 100f, 50);
+    }
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height);
@@ -135,14 +170,15 @@ public class GameScreen implements Screen, Serializable {
         this.turnS = GameScreen.turn;
         missile.write();
     }
-    public void read() {
+    public void read(MyGdxGame myGame) {
         GameScreen.fired = this.firedS;
         GameScreen.turn = this.turnS;
         player1.read();
-        player1.render(myGame.getWorld());
         player2.read();
-        player2.render(myGame.getWorld());
         missile.read();
+        GameScreen.myGame = myGame;
+        player1.render(myGame.getWorld());
+        player2.render(myGame.getWorld());
         missile.render(myGame.getWorld());
     }
     public void destroyObject() {

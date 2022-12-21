@@ -4,7 +4,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class Utils {
+public class Utils implements Serializable{
     private static float missleSpeed = 100;
     static private float buttonHeight = 10;
     static private float buttonWidth = 25;
@@ -17,6 +17,8 @@ public class Utils {
     static private float width = 1280;
     static private float accumulator;
     private static int totalLoaded = 0, loadedNum = 0;
+    private static Utils utils;
+    private int totalGame = 0, loadedNumber = 0;
     private static ObjectOutputStream out;
     private static ObjectInputStream inp;
     public static float getAccumulator() {
@@ -33,12 +35,34 @@ public class Utils {
     public static float getButtonWidth() {
         return buttonWidth;
     }
-
+    public void setter() {
+        totalGame = totalLoaded;
+        loadedNumber = loadedNum;
+    }
+    public void getter() {
+        totalLoaded = totalGame;
+        loadedNum = loadedNumber;
+    }
     public static void writes(Serializable st, int i) {
         try {
             out = new ObjectOutputStream(Files.newOutputStream(Paths.get("output" + i)));
             out.writeObject(st);
             out.close();
+            if (utils == null) utils = new Utils();
+            utils.setter();
+            out = new ObjectOutputStream(Files.newOutputStream(Paths.get("utils")));
+            out.writeObject(utils);
+            out.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public static void readGame() {
+        try {
+            inp = new ObjectInputStream(Files.newInputStream(Paths.get("utils")));
+            utils = (Utils) inp.readObject();
+            utils.getter();
+            inp.close();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

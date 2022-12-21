@@ -31,7 +31,7 @@ public class MyGdxGame extends Game {
 	public SpriteBatch getBatch() {
 		return batch;
 	}
-
+	private Win winScreen;
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
@@ -41,6 +41,7 @@ public class MyGdxGame extends Game {
 		Gdx.input.setInputProcessor(multiplexer);
 		buttonCreator = new ButtonCreator(this);
 		gamCam = new OrthographicCamera();
+		winScreen = new Win(this);
 		scalePort = new StretchViewport(Utils.getWidth(), Utils.getHeight(), gamCam);
 		debugRenderer = new Box2DDebugRenderer();
 		world = new World(new Vector2(0, -9.8f), true);
@@ -48,7 +49,6 @@ public class MyGdxGame extends Game {
 			@Override
 			public void beginContact(Contact contact) {
 				if (contact.getFixtureA().getUserData() != null && contact.getFixtureA().getUserData().toString().equals("missile")) {
-					Missile.setDestroyed(true);
 					if (contact.getFixtureB().getUserData() != null){
 						if (contact.getFixtureB().getUserData().toString().equals("player1")) {
 							GameScreen.setPlayersHealth(true, false);
@@ -57,16 +57,17 @@ public class MyGdxGame extends Game {
 							GameScreen.setPlayersHealth(false, true);
 						}
 					}
+					Missile.setDestroyed(true);
 				} else if (contact.getFixtureB().getUserData() != null && contact.getFixtureB().getUserData().toString().equals("missile")) {
-					Missile.setDestroyed(true);
-					if (contact.getFixtureB().getUserData() != null){
-						if (contact.getFixtureB().getUserData().toString().equals("player1")) {
+					if (contact.getFixtureA().getUserData() != null){
+						if (contact.getFixtureA().getUserData().toString().equals("player1")) {
 							GameScreen.setPlayersHealth(true, false);
 						}
-						if (contact.getFixtureB().getUserData().toString().equals("player2")) {
+						if (contact.getFixtureA().getUserData().toString().equals("player2")) {
 							GameScreen.setPlayersHealth(false, true);
 						}
 					}
+					Missile.setDestroyed(true);
 				}
 			}
 			@Override
@@ -79,8 +80,8 @@ public class MyGdxGame extends Game {
 		loadScreen = new LoadScreen(this);
 		mainScreen = new MainScreen(this);
 		tankSelectionScreen = TankSelectionScreen.getInstances(this);
+//		Utils.readGame();
 		this.setScreen(mainScreen);
-		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 	}
 
 	@Override
@@ -166,5 +167,9 @@ public class MyGdxGame extends Game {
 
 	public TankSelectionScreen getTankSelectionScreen() {
 		return tankSelectionScreen;
+	}
+
+	public Win getWinScreen() {
+		return winScreen;
 	}
 }

@@ -136,7 +136,7 @@ public class ButtonCreator {
                     resize = true;
                     Utils.setLoadedNum(finalI);
                     mygame.setGameScreen(Utils.reads(finalI));
-                    mygame.getGameScreen().read();
+                    mygame.getGameScreen().read(mygame);
                     mygame.setScreen(mygame.getGameScreen());
                 }
             });
@@ -153,7 +153,7 @@ public class ButtonCreator {
                     table.reset();
                     resize = true;
                     mygame.setGameScreen(Utils.reads(Utils.getLoadedNum()));
-                    mygame.getGameScreen().read();
+                    mygame.getGameScreen().read(mygame);
                     mygame.setScreen(mygame.getGameScreen());
                 }
             });
