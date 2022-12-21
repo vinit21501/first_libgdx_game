@@ -6,22 +6,18 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
-public class PauseMenu implements Screen {
-    private ButtonCreator buttonCreator;
+public class LoadScreen implements Screen {
     private MyGdxGame myGame;
     private TextureRegion backGround;
-    PauseMenu(MyGdxGame game) {
-        myGame = game;
-        backGround = new TextureRegion(new Texture("BACKGROUND/bg1.png"));
+    private ButtonCreator buttonCreator;
+    LoadScreen(MyGdxGame myGame) {
+        this.myGame = myGame;
         buttonCreator = myGame.getButtonCreator();
+        backGround = new TextureRegion(new Texture("BACKGROUND/bg7.png"));
     }
-
     @Override
     public void show() {
-        buttonCreator.addMainMenuButton();
-        buttonCreator.addResumeButton();
-        buttonCreator.addLoadButton();
-        buttonCreator.addExitButton();
+        buttonCreator.loadMenu();
     }
 
     @Override
@@ -31,14 +27,14 @@ public class PauseMenu implements Screen {
         myGame.getBatch().setProjectionMatrix(myGame.getGamCam().combined);
         myGame.getGamCam().update();
         myGame.getBatch().begin();
-        myGame.getBatch().draw(backGround, -Utils.getWidth() / 2f, -Utils.getHeight() / 2f, Utils.getWidth(), Utils.getHeight());
+        myGame.getBatch().draw(backGround, -Utils.getWidth() / 2f , -Utils.getHeight() / 2f, Utils.getWidth(), Utils.getHeight());
         myGame.getBatch().end();
         buttonCreator.render(delta);
     }
 
     @Override
     public void resize(int width, int height) {
-
+        myGame.getScalePort().update(width, height);
     }
 
     @Override
@@ -53,6 +49,7 @@ public class PauseMenu implements Screen {
 
     @Override
     public void hide() {
+
     }
 
     @Override

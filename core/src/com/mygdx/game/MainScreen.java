@@ -12,32 +12,33 @@ public class MainScreen implements Screen {
     private ButtonCreator buttonCreator;
     MainScreen(MyGdxGame game) {
         myGame = game;
+        buttonCreator = myGame.getButtonCreator();
         backGround = new TextureRegion(new Texture("BACKGROUND/mainMenu.png"));
     }
 
     @Override
     public void show() {
-        myGame.buttonCreator.addNewGameButton();
-        myGame.buttonCreator.addResumeButton();
-        myGame.buttonCreator.addLoadButton();
-        myGame.buttonCreator.addExitButton();
+        buttonCreator.addNewGameButton();
+        buttonCreator.addResumeButton();
+        buttonCreator.addLoadButton();
+        buttonCreator.addExitButton();
     }
 
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        myGame.batch.setProjectionMatrix(myGame.gamCam.combined);
-        myGame.gamCam.update();
-        myGame.batch.begin();
-        myGame.batch.draw(backGround, -Utils.getWidth() / 2f , -Utils.getHeight() / 2f, Utils.getWidth(), Utils.getHeight());
-        myGame.batch.end();
-        myGame.buttonCreator.render(delta);
+        myGame.getBatch().setProjectionMatrix(myGame.getGamCam().combined);
+        myGame.getGamCam().update();
+        myGame.getBatch().begin();
+        myGame.getBatch().draw(backGround, -Utils.getWidth() / 2f , -Utils.getHeight() / 2f, Utils.getWidth(), Utils.getHeight());
+        myGame.getBatch().end();
+        buttonCreator.render(delta);
     }
 
     @Override
     public void resize(int width, int height) {
-        myGame.scalePort.update(width, height);
+        myGame.getScalePort().update(width, height);
     }
 
     @Override
@@ -56,7 +57,7 @@ public class MainScreen implements Screen {
 
     @Override
     public void dispose() {
-        myGame.batch.dispose();
+        myGame.getBatch().dispose();
         buttonCreator.dispose();
     }
 }

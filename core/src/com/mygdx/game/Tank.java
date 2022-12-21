@@ -1,6 +1,5 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -10,33 +9,61 @@ import com.badlogic.gdx.physics.box2d.joints.WheelJointDef;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 
 import java.io.Serializable;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Tank implements Serializable {
     private transient Body body, barrelBody;
     private transient BodyDef bodyDef;
     private transient Texture texture, barrelTexture;
     private transient TextureRegion textRegion, barrelTextureRegion;
-    private float length, breadth, density;
-    private float[] points, flipPoints;
-    private transient FixtureDef tankfixdef, wheelfixdef;
-    private transient CircleShape wheels;
+    private static float length, breadth, density;
+    private static float[] points, flipPoints;
+    private static FixtureDef tankfixdef, wheelfixdef;
+    private static CircleShape wheels;
     private transient Body[] wheel;
     private transient WheelJoint[] jointarr;
     private transient WheelJoint barrelJoint;
-    private transient WheelJointDef joints;
-    private int numWheel, type;
-    private transient PolygonShape shape, barrelShape;
+    private static WheelJointDef joints;
+    private static int numWheel;
+    private int type;
+    private static PolygonShape shape, barrelShape;
     private float x, y, power, barrelX, barrelY;
     private boolean flip, fliping;
-    Tank(float x, float y, int type, boolean flip) {
+    private float health;
+    private float fuel;
+    private String name;
+    public boolean getFlip() {
+        return flip;
+    }
+    Tank(float x, float y, int type, boolean flip, String name) {
         this.x = x; this.y = y;
+        this.name = name;
         numWheel = 5;
+        fuel = 50;
         this.type = type;
         this.flip = flip;
         fliping = true;
-        bodyDef = new BodyDef();
+        health = 100;
         points = new float[]{10, 10, 80, 10, 80, 20, 35, 45, 10, 45, 10, 10};
         flipPoints = new float[]{10, 10, 80, 10, 80, 45, 55, 45, 10, 20, 10, 10};
+        shape = new PolygonShape();
+        wheels = new CircleShape();
+        wheels.setRadius(10);
+        joints = new WheelJointDef();
+        wheelfixdef = new FixtureDef();
+        barrelShape = new PolygonShape();
+        barrelShape.setAsBox(40, 5);
+        wheelfixdef.shape = wheels;
+        wheelfixdef.restitution = 1f;
+        wheelfixdef.density = 5f;
+        wheelfixdef.friction = 50f;
+        length = 80;
+        breadth = 45;
+        density = 5f;
+        read();
+    }
+    public void read() {
+        bodyDef = new BodyDef();
         bodyDef.position.set(x, y);
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         if (type >= 1 && type <= 5) {
@@ -49,25 +76,8 @@ public class Tank implements Serializable {
         }
         textRegion = new TextureRegion(texture);
         barrelTextureRegion = new TextureRegion(barrelTexture);
-        shape = new PolygonShape();
-        wheels = new CircleShape();
-        wheels.setRadius(10);
-        joints = new WheelJointDef();
-        wheelfixdef = new FixtureDef();
-        barrelShape = new PolygonShape();
-        barrelShape.setAsBox(40, 5);
-        wheelfixdef.shape = wheels;
-        wheelfixdef.restitution = 1f;
-        wheelfixdef.density = 5f;
-        wheelfixdef.friction = 50f;
         wheel = new Body[numWheel];
-        length = 80;
-        breadth = 45;
-        density = 5f;
         jointarr = new WheelJoint[numWheel];
-    }
-    Tank(float x, float y, boolean flip) {
-        this(x, y, 3, flip);
     }
     public void render(World world) {
         if (flip) {
@@ -82,7 +92,7 @@ public class Tank implements Serializable {
         tankfixdef.density = density;
         tankfixdef.restitution = 1f;
         tankfixdef.friction = 50f;
-        body.createFixture(tankfixdef);
+        body.createFixture(tankfixdef).setUserData(name);
         body.setGravityScale(10f);
         joints.bodyA = body;
         joints.dampingRatio = 10f;
@@ -99,14 +109,14 @@ public class Tank implements Serializable {
         }
         barrelBody = world.createBody(bodyDef);
         bodyDef.position.set(x, y + 10);
-        barrelBody.createFixture(barrelShape, density);
+        barrelBody.createFixture(barrelShape, density).setUserData(name);
         barrelBody.setGravityScale(10);
         joints.bodyB = barrelBody;
         barrelJoint = (WheelJoint) world.createJoint(joints);
         joints.frequencyHz = density;
         for (int i = 0; i < numWheel; ++i) {
             wheel[i] = world.createBody(bodyDef);
-            wheel[i].createFixture(wheels, density);
+            wheel[i].createFixture(wheels, density).setUserData(name);
             wheel[i].setGravityScale(10);
         }
         joints.localAxisA.set(Vector2.Y);
@@ -123,22 +133,31 @@ public class Tank implements Serializable {
             power = (float) Math.sqrt(Math.pow(touchpad.getKnobPercentX(), 2) + Math.pow(touchpad.getKnobPercentY(), 2));
         }
         if (moved > 0) {
-            if (flip) {
-                for (WheelJoint t : jointarr) t.setMotorSpeed(6);
-                body.setAngularVelocity(-Utils.getBarrelSpeed());
-            } else {
-                for (WheelJoint t : jointarr) t.setMotorSpeed(-6);
-                body.setAngularVelocity(Utils.getBarrelSpeed());
+            if (--fuel > 0) {
+//                if (flip) {
+//                    for (WheelJoint t : jointarr) t.setMotorSpeed(6);
+//                    body.setAngularVelocity(-Utils.getBarrelSpeed());
+//                } else {
+                    for (WheelJoint t : jointarr) t.setMotorSpeed(-6);
+                    body.setAngularVelocity(Utils.getBarrelSpeed() / 2);
+//                }
             }
         } else if (moved < 0) {
-            if (flip) {
-                for (WheelJoint t : jointarr) t.setMotorSpeed(-6);
-                body.setAngularVelocity(Utils.getBarrelSpeed());
-            } else {
-                for (WheelJoint t : jointarr) t.setMotorSpeed(6);
-                body.setAngularVelocity(-Utils.getBarrelSpeed());
+            if (--fuel > 0) {
+//                if (flip) {
+//                    for (WheelJoint t : jointarr) t.setMotorSpeed(-6);
+//                    body.setAngularVelocity(Utils.getBarrelSpeed());
+//                } else {
+                    for (WheelJoint t : jointarr) t.setMotorSpeed(6);
+                    body.setAngularVelocity(-Utils.getBarrelSpeed() / 2);
+//                }
             }
-        } else if (touchpad.getKnobPercentX() > 0) {
+        } else {
+            body.setAngularVelocity(0);
+            body.setAngularDamping(0);
+            for (WheelJoint t : jointarr) t.setMotorSpeed(0);
+        }
+        if (touchpad.getKnobPercentX() > 0) {
             if (flip) {
                 fliping = true;
                 flip = false;
@@ -150,11 +169,7 @@ public class Tank implements Serializable {
                 fliping = true;
             }
             calculateAngle(touchpad.getKnobPercentX(), touchpad.getKnobPercentY());
-        } else {
-            barrelJoint.setMotorSpeed(0);
-            body.setAngularDamping(0);
-            for (WheelJoint t : jointarr) t.setMotorSpeed(0);
-        }
+        } else barrelJoint.setMotorSpeed(0);
     }
     private void calculateAngle(float delX, float delY) {
         if (Math.atan(delY / delX) < barrelBody.getAngle()) {
@@ -187,13 +202,13 @@ public class Tank implements Serializable {
     public void update(MyGdxGame game) {
         if (fliping) {
             if (body != null) {
-                game.world.destroyBody(body);
-                game.world.destroyBody(barrelBody);
+                game.getWorld().destroyBody(body);
+                game.getWorld().destroyBody(barrelBody);
                 for (int i = 0; i < numWheel; ++i) {
-                    game.world.destroyBody(wheel[i]);
+                    game.getWorld().destroyBody(wheel[i]);
                 }
             }
-            this.render(game.world);
+            this.render(game.getWorld());
             fliping = false;
         }
         x = body.getPosition().x;
@@ -201,12 +216,26 @@ public class Tank implements Serializable {
         barrelX = barrelBody.getPosition().x;
         barrelY = barrelBody.getPosition().y;
         if (flip) {
-            game.batch.draw(textRegion, x - 20, y - 5, 20, 0, length, breadth, 1.5f, 1.5f, (float) Math.toDegrees(body.getAngle()));
-            game.batch.draw(barrelTextureRegion, barrelX - 30, barrelY - 5, 30, 5, 60, 10, 1.5f, 1.5f, (float) Math.toDegrees(barrelBody.getAngle()) - 180);
+            game.getBatch().draw(textRegion, x - 20, y - 5, 20, 0, length, breadth, 1.5f, 1.5f, (float) Math.toDegrees(body.getAngle()));
+            game.getBatch().draw(barrelTextureRegion, barrelX - 30, barrelY - 5, 30, 5, 60, 10, 1.5f, 1.5f, (float) Math.toDegrees(barrelBody.getAngle()) - 180);
         }
         else {
-            game.batch.draw(textRegion, x, y - 5, 0, 0, length, breadth, 1.5f, 1.5f, (float) Math.toDegrees(body.getAngle()));
-            game.batch.draw(barrelTextureRegion, barrelX - 30, barrelY - 5, 30, 5, 60, 10, 1.5f, 1.5f, (float) Math.toDegrees(barrelBody.getAngle()));
+            game.getBatch().draw(textRegion, x, y - 5, 0, 0, length, breadth, 1.5f, 1.5f, (float) Math.toDegrees(body.getAngle()));
+            game.getBatch().draw(barrelTextureRegion, barrelX - 30, barrelY - 5, 30, 5, 60, 10, 1.5f, 1.5f, (float) Math.toDegrees(barrelBody.getAngle()));
         }
+    }
+    public void dispose(World world) {
+        if (body != null) world.destroyBody(body);
+        if (barrelBody != null) world.destroyBody(barrelBody);
+        for (int i = 0; i < numWheel; ++i) {
+            if (wheel[i] != null) world.destroyBody(wheel[i]);
+        }
+    }
+    public void updateHealth() {
+        body.setAngularVelocity(1000);
+        health -= ThreadLocalRandom.current().nextFloat(20, 30);
+    }
+    public void fuelRecover() {
+        this.fuel = 100;
     }
 }

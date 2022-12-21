@@ -1,10 +1,8 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.Gdx;
-
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Utils {
     private static float missleSpeed = 100;
@@ -18,7 +16,9 @@ public class Utils {
     static private float height = 720;
     static private float width = 1280;
     static private float accumulator;
-
+    private static int totalLoaded = 0, loadedNum = 0;
+    private static ObjectOutputStream out;
+    private static ObjectInputStream inp;
     public static float getAccumulator() {
         return accumulator;
     }
@@ -34,14 +34,25 @@ public class Utils {
         return buttonWidth;
     }
 
-    public static void writes(Serializable st) {
+    public static void writes(Serializable st, int i) {
         try {
-            FileOutputStream fs = new FileOutputStream("output1");
-            ObjectOutputStream inp = new ObjectOutputStream(fs);
-            inp.writeObject(st);
+            out = new ObjectOutputStream(Files.newOutputStream(Paths.get("output" + i)));
+            out.writeObject(st);
+            out.close();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+    public static GameScreen reads(int i) {
+        GameScreen t;
+        try {
+            inp = new ObjectInputStream(Files.newInputStream(Paths.get("output" + i)));
+            t = (GameScreen) inp.readObject();
+            inp.close();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return t;
     }
 
     public static float getButtonPadding() {
@@ -74,5 +85,21 @@ public class Utils {
 
     public static float getBarrelSpeed() {
         return barrelSpeed;
+    }
+
+    public static int getLoadedNum() {
+        return loadedNum;
+    }
+
+    public static void setLoadedNum(int loadedNum) {
+        Utils.loadedNum = loadedNum;
+    }
+
+    public static int getTotalLoaded() {
+        return totalLoaded;
+    }
+
+    public static void setTotalLoaded(int totalLoaded) {
+        Utils.totalLoaded = totalLoaded;
     }
 }

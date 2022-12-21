@@ -13,23 +13,25 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
-
 public class MyGdxGame extends Game {
-	public SpriteBatch batch;
-	public PolygonSpriteBatch polyBatch;
-	public BitmapFont font;
-	public World world;
-	public OrthographicCamera gamCam;
-	public Box2DDebugRenderer debugRenderer;
-	public Viewport scalePort;
-	public ButtonCreator buttonCreator;
-	public InputMultiplexer multiplexer;
-	public MainScreen mainScreen;
-	public GameScreen gameScreen;
-	public PauseMenu pauseMenu;
+	private SpriteBatch batch;
+	private PolygonSpriteBatch polyBatch;
+	private BitmapFont font;
+	private World world;
+	private OrthographicCamera gamCam;
+	private Box2DDebugRenderer debugRenderer;
+	private Viewport scalePort;
+	private ButtonCreator buttonCreator;
+	private InputMultiplexer multiplexer;
+	private MainScreen mainScreen;
+	private GameScreen gameScreen;
+	private PauseMenu pauseMenu;
+	private LoadScreen loadScreen;
+	private TankSelectionScreen tankSelectionScreen;
+	public SpriteBatch getBatch() {
+		return batch;
+	}
+
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
@@ -47,8 +49,24 @@ public class MyGdxGame extends Game {
 			public void beginContact(Contact contact) {
 				if (contact.getFixtureA().getUserData() != null && contact.getFixtureA().getUserData().toString().equals("missile")) {
 					Missile.setDestroyed(true);
+					if (contact.getFixtureB().getUserData() != null){
+						if (contact.getFixtureB().getUserData().toString().equals("player1")) {
+							GameScreen.setPlayersHealth(true, false);
+						}
+						if (contact.getFixtureB().getUserData().toString().equals("player2")) {
+							GameScreen.setPlayersHealth(false, true);
+						}
+					}
 				} else if (contact.getFixtureB().getUserData() != null && contact.getFixtureB().getUserData().toString().equals("missile")) {
 					Missile.setDestroyed(true);
+					if (contact.getFixtureB().getUserData() != null){
+						if (contact.getFixtureB().getUserData().toString().equals("player1")) {
+							GameScreen.setPlayersHealth(true, false);
+						}
+						if (contact.getFixtureB().getUserData().toString().equals("player2")) {
+							GameScreen.setPlayersHealth(false, true);
+						}
+					}
 				}
 			}
 			@Override
@@ -58,7 +76,9 @@ public class MyGdxGame extends Game {
 			@Override
 			public void postSolve(Contact contact, ContactImpulse impulse) {}
 		});
+		loadScreen = new LoadScreen(this);
 		mainScreen = new MainScreen(this);
+		tankSelectionScreen = TankSelectionScreen.getInstances(this);
 		this.setScreen(mainScreen);
 		Gdx.app.setLogLevel(Application.LOG_DEBUG);
 	}
@@ -79,5 +99,72 @@ public class MyGdxGame extends Game {
 	public void dispose () {
 		buttonCreator.dispose();
 		super.dispose();
+	}
+
+	public PolygonSpriteBatch getPolyBatch() {
+		return polyBatch;
+	}
+	public BitmapFont getFont() {
+		return font;
+	}
+
+	public World getWorld() {
+		return world;
+	}
+
+	public OrthographicCamera getGamCam() {
+		return gamCam;
+	}
+
+	public Box2DDebugRenderer getDebugRenderer() {
+		return debugRenderer;
+	}
+
+	public Viewport getScalePort() {
+		return scalePort;
+	}
+
+	public ButtonCreator getButtonCreator() {
+		return buttonCreator;
+	}
+
+	public InputMultiplexer getMultiplexer() {
+		return multiplexer;
+	}
+
+	public MainScreen getMainScreen() {
+		return mainScreen;
+	}
+
+	public void setMainScreen(MainScreen mainScreen) {
+		this.mainScreen = mainScreen;
+	}
+
+	public GameScreen getGameScreen() {
+		return gameScreen;
+	}
+
+	public void setGameScreen(GameScreen gameScreen) {
+		this.gameScreen = gameScreen;
+	}
+
+	public PauseMenu getPauseMenu() {
+		return pauseMenu;
+	}
+
+	public void setPauseMenu(PauseMenu pauseMenu) {
+		this.pauseMenu = pauseMenu;
+	}
+
+	public LoadScreen getLoadScreen() {
+		return loadScreen;
+	}
+
+	public void setLoadScreen(LoadScreen loadScreen) {
+		this.loadScreen = loadScreen;
+	}
+
+	public TankSelectionScreen getTankSelectionScreen() {
+		return tankSelectionScreen;
 	}
 }

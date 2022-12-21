@@ -14,13 +14,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class ButtonCreator {
-    private final TextButton.TextButtonStyle buttonStyle, pauseButtonStyle;
+    private final TextButton.TextButtonStyle buttonStyle, pauseButtonStyle, loadButtonStyle;
     private TextureRegionDrawable up, down, pause;
     private MyGdxGame mygame;
     private Stage stage;
     private Table table;
     private boolean setter, resize;
-    private TextButton newGame, exitButton, loadButton, resumeButton, mainMenuButton, fireButton;
+    private TextButton newGame, exitButton, loadButton, resumeButton, mainMenuButton, fireButton, loadingButton, playerTank, leftButton, rightButton;
     private Button pauseButton;
     ButtonCreator(MyGdxGame mygame) {
         this.mygame = mygame;
@@ -34,11 +34,14 @@ public class ButtonCreator {
         stage.addActor(table);
         buttonStyle = new TextButton.TextButtonStyle();
         pauseButtonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = mygame.font;
+        loadButtonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.font = mygame.getFont();
         buttonStyle.up = up;
         buttonStyle.down = down;
+        loadButtonStyle.font = mygame.getFont();
+        loadButtonStyle.up = loadButtonStyle.down = new TextureRegionDrawable(new TextureRegion(new Texture("BUTTON/up.png")));
         pauseButtonStyle.down = pauseButtonStyle.up = pause;
-        mygame.multiplexer.addProcessor(stage);
+        mygame.getMultiplexer().addProcessor(stage);
     }
     public void addPauseButton() {
         pauseButton = new Button(pauseButtonStyle);
@@ -54,8 +57,11 @@ public class ButtonCreator {
                 stage.addActor(table);
                 setter = false;
                 resize = true;
-                if (mygame.pauseMenu == null) mygame.pauseMenu = new PauseMenu(mygame);
-                mygame.setScreen(mygame.pauseMenu);
+                mygame.getGameScreen().write();
+                Utils.writes(mygame.getGameScreen(), Utils.getLoadedNum());
+                mygame.getGameScreen().destroyObject();
+                if (mygame.getPauseMenu() == null) mygame.setPauseMenu(new PauseMenu(mygame));
+                mygame.setScreen(mygame.getPauseMenu());
             }
         });
     }
@@ -76,9 +82,7 @@ public class ButtonCreator {
             public void clicked(InputEvent event, float x, float y) {
                 table.reset();
                 resize = true;
-//                mygame.gameScreen.dispose();
-                if (mygame.gameScreen == null) mygame.gameScreen = new GameScreen(mygame);
-                mygame.setScreen(mygame.gameScreen);
+                mygame.setScreen(mygame.getTankSelectionScreen());
             }
         });
         table.add(newGame).space(Utils.getButtonPadding()).row();
@@ -91,23 +95,25 @@ public class ButtonCreator {
             public void clicked(InputEvent event, float x, float y) {
                 table.reset();
                 resize = true;
-                if (mygame.mainScreen == null) mygame.mainScreen = new MainScreen(mygame);
-                mygame.setScreen(mygame.mainScreen);
+                if (mygame.getMainScreen() == null) mygame.setMainScreen(new MainScreen(mygame));
+                mygame.setScreen(mygame.getMainScreen());
             }
         });
     }
     public void addLoadButton() {
-        loadButton = new TextButton("LOAD GAME", buttonStyle);
-        table.add(loadButton).space(Utils.getButtonPadding()).row();
-        loadButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                table.reset();
-                resize = true;
-                if (mygame.gameScreen == null) mygame.gameScreen = new GameScreen(mygame);
-                mygame.setScreen(mygame.gameScreen);
-            }
-        });
+        if (Utils.getTotalLoaded() > 0) {
+            loadButton = new TextButton("LOAD GAME", buttonStyle);
+            table.add(loadButton).space(Utils.getButtonPadding()).row();
+            loadButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    table.reset();
+                    resize = true;
+                    if (mygame.getLoadScreen() == null) mygame.setLoadScreen(new LoadScreen(mygame));
+                    mygame.setScreen(mygame.getLoadScreen());
+                }
+            });
+        }
     }
     public void addExitButton() {
         exitButton = new TextButton("QUIT", buttonStyle);
@@ -119,18 +125,39 @@ public class ButtonCreator {
             }
         });
     }
+    public void loadMenu() {
+        for (int i = 1; i <= Utils.getTotalLoaded(); ++i) {
+            loadingButton = new TextButton("Loaded " + i, loadButtonStyle);
+            final int finalI = i;
+            loadingButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    table.reset();
+                    resize = true;
+                    Utils.setLoadedNum(finalI);
+                    mygame.setGameScreen(Utils.reads(finalI));
+                    mygame.getGameScreen().read();
+                    mygame.setScreen(mygame.getGameScreen());
+                }
+            });
+            table.add(loadingButton).space(Utils.getButtonPadding()).row();
+        }
+    }
     public void addResumeButton() {
-        resumeButton = new TextButton("RESUME GAME", buttonStyle);
-        table.add(resumeButton).space(Utils.getButtonPadding()).row();
-        resumeButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                table.reset();
-                resize = true;
-                if (mygame.gameScreen == null) mygame.gameScreen = new GameScreen(mygame);
-                mygame.setScreen(mygame.gameScreen);
-            }
-        });
+        if (Utils.getLoadedNum() > 0) {
+            resumeButton = new TextButton("RESUME GAME", buttonStyle);
+            table.add(resumeButton).space(Utils.getButtonPadding()).row();
+            resumeButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    table.reset();
+                    resize = true;
+                    mygame.setGameScreen(Utils.reads(Utils.getLoadedNum()));
+                    mygame.getGameScreen().read();
+                    mygame.setScreen(mygame.getGameScreen());
+                }
+            });
+        }
     }
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
@@ -144,10 +171,6 @@ public class ButtonCreator {
                 t.size(width / 100f * Utils.getButtonWidth(), height / 100f * Utils.getButtonHeight());
             }
         }
-    }
-
-    public Stage getStage() {
-        return stage;
     }
 
     public void render(float delta) {
