@@ -1,5 +1,6 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
@@ -68,6 +69,15 @@ public class Missile implements Serializable {
         if (firing) {
             x = missle.getPosition().x;
             y = missle.getPosition().y;
+            if ((x < -(Utils.getWidth() / 2)) || (x > (Utils.getWidth() / 2))){
+                myGdxGame.getWorld().destroyBody(missle);
+                firing = false;
+                destroyed = false;
+                Utils.setAccumulator(0.005f);
+                GameScreen.setFired(false);
+                tank.fuelRecover();
+                GameScreen.setTurn();
+            }
             missle.setTransform(missle.getPosition(), (float) Math.atan(missle.getLinearVelocity().y / missle.getLinearVelocity().x));
             if (tank.getFlip())
                 myGdxGame.getBatch().draw(misssleTexture, x - missleWidth / 2f, y - missleHeight / 2f, missleWidth / 2f, missleHeight / 2f, missleWidth, missleHeight, 3f, 3f, (float) Math.toDegrees(missle.getAngle()) + 180);

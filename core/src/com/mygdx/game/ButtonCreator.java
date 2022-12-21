@@ -1,6 +1,7 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -53,10 +54,7 @@ public class ButtonCreator {
         pauseButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                stage.clear();
-                stage.addActor(table);
-                setter = false;
-                resize = true;
+                fun();
                 mygame.getGameScreen().write();
                 Utils.writes(mygame.getGameScreen(), Utils.getLoadedNum());
                 mygame.getGameScreen().destroyObject();
@@ -64,6 +62,12 @@ public class ButtonCreator {
                 mygame.setScreen(mygame.getPauseMenu());
             }
         });
+    }
+    public void fun() {
+        stage.clear();
+        stage.addActor(table);
+        setter = false;
+        resize = true;
     }
     public TextButton addFireButton() {
         fireButton = new TextButton("FIRE", buttonStyle);

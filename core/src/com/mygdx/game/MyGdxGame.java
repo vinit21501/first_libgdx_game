@@ -13,6 +13,8 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import static com.badlogic.gdx.Application.LOG_DEBUG;
+
 public class MyGdxGame extends Game {
 	private SpriteBatch batch;
 	private PolygonSpriteBatch polyBatch;
